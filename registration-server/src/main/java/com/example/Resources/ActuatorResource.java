@@ -34,7 +34,7 @@ public class ActuatorResource extends CoapResource {
             stmt.setString(1, actuator);
             stmt.setString(2, state);
             stmt.executeUpdate();
-            exchange.respond("Resource created");
+            exchange.respond("Actuator resource created");
         } catch (SQLException e) {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
