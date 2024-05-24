@@ -85,7 +85,9 @@ public class RemoteControlApp {
                     System.out.println("1. CO2");
                     System.out.println("2. Light");
                     System.out.println("3. Phase");
-                    
+                    System.out.println("4. Moisture");
+                    System.out.println("5. Temperature");
+
                     int resource = scanner.nextInt();
                     scanner.nextLine();
 
@@ -96,7 +98,7 @@ public class RemoteControlApp {
                             int co2Level = scanner.nextInt();
                             System.out.print("Insert CO2 upper bound: ");
                             int tooHigh = scanner.nextInt();
-                            System.out.print("Inser CO2 lower bound: ");
+                            System.out.print("Insert CO2 lower bound: ");
                             int tooLow = scanner.nextInt();
                             setCO2Parameters(co2Level, tooHigh, tooLow);
                             break;
@@ -107,6 +109,18 @@ public class RemoteControlApp {
                         case 3:
                             // Change farm phase
                             changeFarmPhase();
+                            break;
+                        case 4:
+                            // Change soil moisture
+                            System.out.print("Insert new moisture level: ");
+                            int moisture = scanner.nextInt();
+                            setMoisture(moisture);
+                            break;
+                        case 5:
+                            // Change temperature
+                            System.out.print("Insert new temperature: ");
+                            int temperature = scanner.nextInt();
+                            setTemperature(temperature);
                             break;
                         default:
                             System.out.println("Invalid choice");
@@ -185,6 +199,34 @@ public class RemoteControlApp {
     private static void changeFarmPhase() {
         CoapClient client = new CoapClient(PHASE_RESOURCE_URI);
         CoapResponse response = client.post("{}", 0);
+        if (response != null) {
+            System.out.println("Response: " + response.getResponseText());
+        } else {
+            System.out.println("No response from server.");
+        }
+    }
+
+    private static void setMoisture(int moisture) {
+        CoapClient client = new CoapClient(SOIL_RESOURCE_URI);
+        JSONObject json = new JSONObject();
+        json.put("moisture", moisture);
+    
+
+        CoapResponse response = client.post(json.toString(), 0);
+        if (response != null) {
+            System.out.println("Response: " + response.getResponseText());
+        } else {
+            System.out.println("No response from server.");
+        }
+    }
+
+    private static void setTemperature(int temperature) {
+        CoapClient client = new CoapClient(SOIL_RESOURCE_URI);
+        JSONObject json = new JSONObject();
+        json.put("temperature", temperature);
+    
+
+        CoapResponse response = client.post(json.toString(), 0);
         if (response != null) {
             System.out.println("Response: " + response.getResponseText());
         } else {
