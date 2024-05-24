@@ -5,11 +5,11 @@ import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.CoapHandler;
 
-public class MyClient {
+public class ClientObserver {
 
 	public static void main(String[] args) {
 
-		CoapClient client = new CoapClient("coap://127.0.0.1/hello");
+		CoapClient client = new CoapClient("coap://localhost/observe");
 
 		CoapResponse response = client.get();
 
