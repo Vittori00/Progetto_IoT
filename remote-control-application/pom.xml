@@ -17,15 +17,30 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
-
+<repositories>
+<repository>
+<id>repo.eclipse.org</id>
+<name>Californium Repository</name>
+<url>https://repo.eclipse.org/content/repositories/californium/</url>
+</repository>
+</repositories>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.californium</groupId>
+            <artifactId>californium-core</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20210307</version>
+</dependency>
+</dependencies>
 
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
@@ -69,7 +84,61 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
+        <plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-compiler-plugin</artifactId>
+<version>2.3.2</version>
+</plugin>
+<plugin> <groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-dependency-plugin</artifactId>
+<executions>
+<execution>
+<id>copy-installed</id>
+<phase>install</phase>
+<goals> <goal>copy</goal>
+</goals>
+<configuration>
+<artifactItems>
+<artifactItem>
+<groupId>${project.groupId}</groupId>
+<artifactId>${project.artifactId}</artifactId>
+<version>${project.version}</version>
+<type>${project.packaging}</type> </artifactItem>
+</artifactItems>
+<outputDirectory>../run/</outputDirectory>
+</configuration>
+</execution>
+</executions>
+</plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+    <plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-assembly-plugin</artifactId>
+<configuration>
+<appendAssemblyId>false</appendAssemblyId>
+<archive>
+<manifest>
+<addClasspath>true</addClasspath>
+<mainClass>com.example.RemoteControlApp</mainClass>
+<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+</manifest>
+</archive>
+<descriptorRefs>
+<descriptorRef>jar-with-dependencies</descriptorRef>
+</descriptorRefs>
+</configuration>
+<executions>
+<execution>
+<id>make-assembly</id>
+<phase>package</phase>
+<goals>
+<goal>single</goal>
+</goals>
+</execution>
+</executions>
+</plugin>
+</plugins>
   </build>
 </project>
