@@ -85,6 +85,7 @@ public class RemoteControlApp {
                     System.out.println("1. CO2");
                     System.out.println("2. Light");
                     System.out.println("3. Phase");
+                    
                     int resource = scanner.nextInt();
                     scanner.nextLine();
 
@@ -100,7 +101,8 @@ public class RemoteControlApp {
                             setCO2Parameters(co2Level, tooHigh, tooLow);
                             break;
                         case 2:
-                            System.out.println("Set Light parameters:");
+                            // Change light
+                            changeLight();
                             break;
                         case 3:
                             // Change farm phase
@@ -162,6 +164,16 @@ public class RemoteControlApp {
         json.put("too_low", tooLow);
 
         CoapResponse response = client.post(json.toString(), 0);
+        if (response != null) {
+            System.out.println("Response: " + response.getResponseText());
+        } else {
+            System.out.println("No response from server.");
+        }
+    }
+
+    private static void changeLight() {
+        CoapClient client = new CoapClient(LIGHT_RESOURCE_URI);
+        CoapResponse response = client.post("{}", 0);
         if (response != null) {
             System.out.println("Response: " + response.getResponseText());
         } else {
