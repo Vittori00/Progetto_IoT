@@ -79,6 +79,35 @@ public class RemoteControlApp {
                     // Show status of actuators
                     getStatus(actuators);
                     break;
+                case 9:
+                    // Choose resource
+                    System.out.println("Choose a resource:");
+                    System.out.println("1. CO2");
+                    System.out.println("2. Light");
+                    System.out.println("3. Phase");
+                    int resource = scanner.nextInt();
+                    scanner.nextLine();
+
+                    switch (resource) {
+                        case 1:
+                            // Set CO2 parameters
+                            System.out.print("Insert CO2 level: ");
+                            int co2Level = scanner.nextInt();
+                            System.out.print("Insert CO2 upper bound: ");
+                            int tooHigh = scanner.nextInt();
+                            System.out.print("Inser CO2 lower bound: ");
+                            int tooLow = scanner.nextInt();
+                            setCO2Parameters(co2Level, tooHigh, tooLow);
+                            break;
+                        case 2:
+                            System.out.println("Set Light parameters:");
+                            break;
+                        case 3:
+                            // Change farm phase
+                            break;
+                        default:
+                            System.out.println("Invalid choice");
+                    }
                 default:
                     System.out.println("Invalid choice");
             }
@@ -104,21 +133,6 @@ public class RemoteControlApp {
     }
 
 
-    private static void setCO2Parameters(int co2Level, int tooHigh, int tooLow) {
-        CoapClient client = new CoapClient(CO2_RESOURCE_URI);
-        JSONObject json = new JSONObject();
-        json.put("co2_level", co2Level);
-        json.put("too_high", tooHigh);
-        json.put("too_low", tooLow);
-
-        CoapResponse response = client.post(json.toString(), 0);
-        if (response != null) {
-            System.out.println("Response: " + response.getResponseText());
-        } else {
-            System.out.println("No response from server.");
-        }
-    }
-
     private static void getStatus(CoapClient client) {
         CoapResponse response = client.get();
         if (client.getURI().equals(COAP_SENSORS_URI)) {
@@ -133,6 +147,22 @@ public class RemoteControlApp {
             } else {
                 System.out.println("No response from server.");
             }
+        } else {
+            System.out.println("No response from server.");
+        }
+    }
+
+
+    private static void setCO2Parameters(int co2Level, int tooHigh, int tooLow) {
+        CoapClient client = new CoapClient(CO2_RESOURCE_URI);
+        JSONObject json = new JSONObject();
+        json.put("co2_level", co2Level);
+        json.put("too_high", tooHigh);
+        json.put("too_low", tooLow);
+
+        CoapResponse response = client.post(json.toString(), 0);
+        if (response != null) {
+            System.out.println("Response: " + response.getResponseText());
         } else {
             System.out.println("No response from server.");
         }
