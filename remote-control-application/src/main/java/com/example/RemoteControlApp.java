@@ -104,6 +104,7 @@ public class RemoteControlApp {
                             break;
                         case 3:
                             // Change farm phase
+                            changeFarmPhase();
                             break;
                         default:
                             System.out.println("Invalid choice");
@@ -161,6 +162,17 @@ public class RemoteControlApp {
         json.put("too_low", tooLow);
 
         CoapResponse response = client.post(json.toString(), 0);
+        if (response != null) {
+            System.out.println("Response: " + response.getResponseText());
+        } else {
+            System.out.println("No response from server.");
+        }
+    }
+
+
+    private static void changeFarmPhase() {
+        CoapClient client = new CoapClient(PHASE_RESOURCE_URI);
+        CoapResponse response = client.post("{}", 0);
         if (response != null) {
             System.out.println("Response: " + response.getResponseText());
         } else {
