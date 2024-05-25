@@ -7,6 +7,7 @@
 
 // Function declarations
 static void res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
+static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 static void res_event_handler(void);
 void initialize_co2_level(void);
 
@@ -21,7 +22,7 @@ int counter = 0;
 EVENT_RESOURCE(res_co2,
                "title=\"CO2\";rt=\"\";obs",
                res_get_handler,
-               NULL,
+               res_post_handler,
                NULL,
                NULL,
                res_event_handler);
@@ -56,4 +57,30 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
     coap_set_header_content_format(response, APPLICATION_JSON);
     snprintf((char *)buffer, COAP_MAX_CHUNK_SIZE, "{\"co2_level\": %d}", co2_level);
     coap_set_payload(response, buffer, strlen((char *)buffer));
+}
+
+static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset) {
+    size_t len = 0;
+    const uint8_t *payload = NULL;
+    char new_co2_level[32];
+    char new_too_high[32];
+    char new_too_low[32];
+
+    len = coap_get_payload(request, &payload);
+
+    if (len) {
+        // Parse the incoming JSON
+        json_decode_object(payload, len, buffer);
+
+        if (json_get_value_string(buffer, "co2_level", new_co2_level, sizeof(new_co2_level))) {
+            co2_level = atoi(new_co2_level);
+        }
+
+        // Respond with the updated values
+        coap_set_header_content_format(response, APPLICATION_JSON);
+        snprintf((char *)buffer, COAP_MAX_CHUNK_SIZE, "{\"co2_level\": %d}", co2_level);
+        coap_set_payload(response, buffer, strlen((char *)buffer));
+    } else {
+        coap_set_status_code(response, BAD_REQUEST_4_00);
+    }
 }
