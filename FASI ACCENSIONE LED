@@ -1,19 +1,26 @@
-LUCE ESTRERNA  		CO2		FASE 			LUCE LED
-SI			BASSA		PRIMA			SPENTO
-SI			ALTA		PRIMA			GIALLO fisso
-NO			BASSA		PRIMA			ROSSO LAMPEGGIA POCO
-NO			ALTA		PRIMA			ROSSO FISSO
+LUCE ESTRERNA  		CO2			    FASE 			LUCE LED
 
+1			            >400 <1500		0			    SPENTO
 
-SI			BASSA		SECONDA			spento
-SI			ALTA		SECONDA			VERDE fisso
-NO 			Bassa		SECONDA			BLU LAMPEGGIA POCO
-NO			ALTA		SECONDA			BLU FISSO
+1			            <400 >1500		0			    GIALLO fisso
 
+0			            >400 <1500		0			    ROSSO LAMPEGGIA POCO
+
+0			            <400 >1500		0			    ROSSO FISSO
 
 
 
-COSA FARE:
--cambiare risorse del server in modo che siano a subscribe
--cambiare il server di conseguenza
--adattare il client
+
+
+1			             >400 <1500		1			    spento
+
+1		              <400 >1500		1			    VERDE lampeggia
+
+0 			          >400 <1500		1			    verde fisso 
+
+0			            <400 >1500		1			    verde fisso
+
+
+
+
+
