@@ -14,7 +14,7 @@ static void res_event_handler(void);
 int light = 0;
 
 // Event resource definition
-EVENT_RESOURCE(res_luce,
+EVENT_RESOURCE(res_light,
                "title=\"Light\";rt=\"\";obs",
                res_get_handler,
                res_post_handler,
@@ -32,7 +32,7 @@ res_event_handler(void)
     if (light != new_light)
     {
         // Notify all the observers
-        coap_notify_observers(&res_luce);
+        coap_notify_observers(&res_light);
     }
     light = new_light;
 }
@@ -56,7 +56,7 @@ res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buf
     light = (light == 0) ? 1 : 0;
 
     // Notify all the observers about the light change
-    coap_notify_observers(&res_luce);
+    coap_notify_observers(&res_light);
 
     // Respond with the updated light
     coap_set_header_content_format(response, APPLICATION_JSON);
