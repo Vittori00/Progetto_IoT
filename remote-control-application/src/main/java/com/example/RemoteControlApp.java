@@ -96,11 +96,7 @@ public class RemoteControlApp {
                             // Set CO2 parameters
                             System.out.print("Insert CO2 level: ");
                             int co2Level = scanner.nextInt();
-                            System.out.print("Insert CO2 upper bound: ");
-                            int tooHigh = scanner.nextInt();
-                            System.out.print("Insert CO2 lower bound: ");
-                            int tooLow = scanner.nextInt();
-                            setCO2Parameters(co2Level, tooHigh, tooLow);
+                            setCO2(co2Level);
                             break;
                         case 2:
                             // Change light
@@ -170,12 +166,10 @@ public class RemoteControlApp {
     }
 
 
-    private static void setCO2Parameters(int co2Level, int tooHigh, int tooLow) {
+    private static void setCO2(int co2Level) {
         CoapClient client = new CoapClient(CO2_RESOURCE_URI);
         JSONObject json = new JSONObject();
         json.put("co2_level", co2Level);
-        json.put("too_high", tooHigh);
-        json.put("too_low", tooLow);
 
         CoapResponse response = client.post(json.toString(), 0);
         if (response != null) {
