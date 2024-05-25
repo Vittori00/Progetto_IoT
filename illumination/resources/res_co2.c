@@ -41,8 +41,7 @@ static void res_event_handler(void)
         counter = 0;
         switched = false;
         coap_notify_observers(&res_co2);
-    }
-    else if (co2_level < too_low || co2_level > too_high) // Check if CO2 level is out of range
+    }else if (co2_level < too_low || co2_level > too_high) // Check if CO2 level is out of range
     {
         switched = true;
         // Notify all the observers

@@ -12,7 +12,7 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 
-// #define SERVER_EP "coap://[fd00::203:3:3:3]:5683"
+// #define SERVER_EP "coap://[fd00::203:3:3:3]:5683"  tanto sarà dinamico
 #define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
@@ -163,38 +163,31 @@ PROCESS_THREAD(er_example_client, ev, data)
 
     // get iniziale per avviare lo stato iniziale della luce
     coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-
-    // CO2
-    
     coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+    
+    // CO2
     coap_set_header_uri_path(request, service_url_co2);
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_co2);
     // Light
-    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
     coap_set_header_uri_path(request, service_url_light);
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_light);
     // Phase
-    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
     coap_set_header_uri_path(request, service_url_phase);
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_phase);
-    // chiamata funzione cambio luci
-    update_led_state(); 
-    
+    // chiamata funzione cambio luci dati i primi parametri trovati
+    update_led_state();
+
     // REGISTRATION PER CO2
-    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
     coap_set_header_uri_path(request, service_url_co2);
     coap_obs_request_registration(&server_ep, service_url_co2, handle_notification_co2, NULL);
-   
 
     // REGISTRATION PER light
     coap_set_header_uri_path(request, service_url_light);
     coap_obs_request_registration(&server_ep, service_url_light, handle_notification_light, NULL);
-  
 
     // REGISTRATION PER phase
     coap_set_header_uri_path(request, service_url_phase);
     coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
-    
 
     while (1)
     {
