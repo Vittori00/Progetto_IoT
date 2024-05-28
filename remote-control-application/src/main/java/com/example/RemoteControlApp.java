@@ -134,6 +134,7 @@ public class RemoteControlApp {
 
     private static void setIlluminationSampling(int illuminationSampling) {
         CoapClient client = new CoapClient(ILLUMINATION_RESOURCE_URI);
+        
 
     }
 
