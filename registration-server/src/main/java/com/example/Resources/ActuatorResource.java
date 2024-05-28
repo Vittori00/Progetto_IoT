@@ -5,6 +5,8 @@ import org.eclipse.californium.core.server.resources.CoapExchange;
 
 import org.json.JSONObject;
 
+import com.example.CoapObserver;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -41,6 +43,9 @@ public class ActuatorResource extends CoapResource {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
         }
+
+        observe(new IlluminationResource(name, address));
+
     }
 
     @Override
@@ -60,5 +65,10 @@ public class ActuatorResource extends CoapResource {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
         }
+    }
+
+    private static void observe(IlluminationResource resource){
+        CoapObserver obs = new CoapObserver(resource);
+        obs.startObserving();
     }
 }

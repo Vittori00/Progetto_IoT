@@ -46,7 +46,6 @@ public class SensorResource extends CoapResource {
             exchange.respond("Internal Server Error");
         }
 
-        observe(new IlluminationResource(name, address));
     }
 
     @Override
@@ -67,10 +66,5 @@ public class SensorResource extends CoapResource {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
         }
-    }
-
-    private static void observe(IlluminationResource resource){
-        CoapObserver obs = new CoapObserver(resource);
-        obs.startObserving();
     }
 }
