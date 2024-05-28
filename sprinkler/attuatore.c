@@ -75,8 +75,7 @@ PROCESS_THREAD(er_example_client, ev, data)
             int class_idx = eml_trees_predict(&irrigation_model, features, 3);
             
             printf("Irrigation needed: %d\n", class_idx);
-            printf("\n--Done--\n");
-            etimer_reset(&et);
+            etimer_reset(&et, TOGGLE_INTERVAL * CLOCK_SECOND);
         }
     }
     PROCESS_END();
