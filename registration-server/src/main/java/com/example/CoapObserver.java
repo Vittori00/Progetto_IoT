@@ -14,6 +14,7 @@ public class CoapObserver {
 
 	public CoapObserver(IlluminationResource resource) {
 		client = new CoapClient("coap://[" + resource.getSensorAddress() + "]/" + resource.getResourceName());
+		// client = new CoapClient("coap://[fd00::202:2:2:2]/" + resource.getResourceName());
 		this.resource = resource;
 	}
 

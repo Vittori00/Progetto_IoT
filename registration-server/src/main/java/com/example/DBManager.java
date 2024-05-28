@@ -16,8 +16,8 @@ public class DBManager {
         try{
             Connection conn = DriverManager.getConnection(DB_URL, this.user, this.password);
             pstInsert = conn.prepareStatement(
-                "INSERT INTO measures (sensIP, temperature, timestamp) " +
-                    "VALUES (?, ?, ?);"
+                "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
+                    "VALUES (?, ?, ?, ?, ?);"
             );
 
         }catch(SQLException e){
