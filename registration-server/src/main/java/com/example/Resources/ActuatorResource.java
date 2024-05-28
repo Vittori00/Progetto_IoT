@@ -26,7 +26,7 @@ public class ActuatorResource extends CoapResource {
         String payload = exchange.getRequestText();
         JSONObject json = new JSONObject(payload);
         String name = json.getString("name");
-        String address = json.getString("address");
+        String address = exchange.getSourceAddress().getHostAddress();; //qui avremo la funzione per prendere l'id non sarà json get string
         String type = json.getString("type");
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
