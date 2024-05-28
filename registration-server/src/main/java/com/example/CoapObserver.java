@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import com.example.Resources.IlluminationResource;
 public class CoapObserver {
 	private CoapClient client;
-	private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/measures", "admin", "admin");
+	private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/CottonNet", "admin", "admin");
 	private IlluminationResource resource;
 
 	public CoapObserver(IlluminationResource resource) {
