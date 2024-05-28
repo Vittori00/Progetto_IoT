@@ -10,16 +10,15 @@ import com.example.CoapObserver;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SensorResource extends CoapResource {
+public class RegistrationResource extends CoapResource {
 
     private static final String DB_URL = "jdbc:mysql://localhost:3306/CottonNet";
     private static final String DB_USER = "admin";
     private static final String DB_PASSWORD = "admin";
 
-    public SensorResource(String name) {
+    public RegistrationResource(String name) {
         super(name);
     }
 
@@ -38,16 +37,27 @@ public class SensorResource extends CoapResource {
             stmt.setString(1, name);
             stmt.setString(2, address);
             stmt.setString(3, type);
-            stmt.setInt(4, sampling);
+            if (type.equals("sensor")) {
+                stmt.setInt(4, sampling);
+            }
             stmt.executeUpdate();
-            exchange.respond("Actuator resource created");
+            if (type.equals("sensor")) {
+                exchange.respond("Sensor resource created");
+            } else {
+                exchange.respond("Actuator resource created");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
         }
 
+        if (type.equals("actuator")) {
+            observe(new IlluminationResource(name, address));
+        }
+
     }
 
+    /*
     @Override
     public void handleGET(CoapExchange exchange) {
         StringBuilder response = new StringBuilder();
@@ -66,5 +76,11 @@ public class SensorResource extends CoapResource {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
         }
+    }
+    */
+
+    private static void observe(IlluminationResource resource){
+        CoapObserver obs = new CoapObserver(resource);
+        obs.startObserving();
     }
 }
