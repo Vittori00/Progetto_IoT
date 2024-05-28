@@ -75,24 +75,4 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
     coap_set_header_content_format(response, APPLICATION_JSON);
     snprintf((char *)buffer, COAP_MAX_CHUNK_SIZE, "{\"co2_level\": %d}", co2_level);
     coap_set_payload(response, buffer, strlen((char *)buffer));
-    /*
-    if (len)
-    {
-        // Parse the incoming JSON
-        json_decode_object(payload, len, buffer);
-
-        if (json_get_value_string(buffer, "co2_level", new_co2_level, sizeof(new_co2_level)))
-        {
-            co2_level = atoi(new_co2_level);
-        }
-
-        // Respond with the updated values
-        coap_set_header_content_format(response, APPLICATION_JSON);
-        snprintf((char *)buffer, COAP_MAX_CHUNK_SIZE, "{\"co2_level\": %d}", co2_level);
-        coap_set_payload(response, buffer, strlen((char *)buffer));
-    }
-    else
-    {
-        coap_set_status_code(response, BAD_REQUEST_4_00);
-    } */
 }

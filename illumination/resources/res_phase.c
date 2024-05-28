@@ -62,9 +62,4 @@ res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buf
 
     // Notify all the observers about the phase change
     coap_notify_observers(&res_phase);
-    /*
-    // Respond with the updated phase
-    coap_set_header_content_format(response, APPLICATION_JSON);
-    snprintf((char *)buffer, COAP_MAX_CHUNK_SIZE, "{\"phase\": %d}", phase);
-    coap_set_payload(response, buffer, strlen((char *)buffer));*/
 }

@@ -58,9 +58,4 @@ res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buf
 
     // Notify all the observers about the light change
     coap_notify_observers(&res_light);
-    /*
-    // Respond with the updated light
-    coap_set_header_content_format(response, APPLICATION_JSON);
-    snprintf((char *)buffer, COAP_MAX_CHUNK_SIZE, "{\"light\": %d}", light);
-    coap_set_payload(response, buffer, strlen((char *)buffer));*/
 }
