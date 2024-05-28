@@ -12,8 +12,8 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 
-// #define SERVER_EP "coap://[fd00::203:3:3:3]:5683"  tanto sarà dinamico
-#define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
+#define SERVER_EP "coap://[fd00::203:3:3:3]:5683"  
+//#define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
 char *service_url_phase = "/phase";
