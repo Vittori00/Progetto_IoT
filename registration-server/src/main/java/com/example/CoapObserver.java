@@ -7,12 +7,12 @@ import org.eclipse.californium.core.CoapResponse;
 import org.json.JSONObject;
 
 import com.example.Resources.IlluminationResource;
-public class ClientObserver {
+public class CoapObserver {
 	private CoapClient client;
 	private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/measures", "admin", "admin");
 	private IlluminationResource resource;
 
-	public ClientObserver(IlluminationResource resource) {
+	public CoapObserver(IlluminationResource resource) {
 		client = new CoapClient("coap://[" + resource.getSensorAddress() + "]/" + resource.getResourceName());
 		this.resource = resource;
 	}
