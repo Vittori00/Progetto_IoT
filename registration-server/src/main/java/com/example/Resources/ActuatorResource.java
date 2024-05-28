@@ -25,14 +25,16 @@ public class ActuatorResource extends CoapResource {
     public void handlePOST(CoapExchange exchange) {
         String payload = exchange.getRequestText();
         JSONObject json = new JSONObject(payload);
-        String actuator = json.getString("actuator");
-        String state = json.getString("state");
+        String name = json.getString("name");
+        String address = json.getString("address");
+        String type = json.getString("type");
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "INSERT INTO actuators (actuator, state) VALUES (?, ?)";
+            String query = "INSERT INTO devices (name, address, type) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, actuator);
-            stmt.setString(2, state);
+            stmt.setString(1, name);
+            stmt.setString(2, address);
+            stmt.setString(3, type);
             stmt.executeUpdate();
             exchange.respond("Actuator resource created");
         } catch (SQLException e) {
@@ -45,12 +47,13 @@ public class ActuatorResource extends CoapResource {
     public void handleGET(CoapExchange exchange) {
         StringBuilder response = new StringBuilder();
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "SELECT * FROM actuators";
+            String query = "SELECT * FROM devices WHERE type = 'actuator'";
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                response.append("{actuator: \"").append(rs.getString("actuator"))
-                        .append("\", state: \"").append(rs.getString("state")).append("\"}\n");
+                response.append("{actuator: \"").append(rs.getString("name"))
+                        .append("\", address: \"").append(rs.getString("address"))
+                        .append("\"}\n");
             }
             exchange.respond(response.toString());
         } catch (SQLException e) {
