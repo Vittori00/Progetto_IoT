@@ -85,29 +85,14 @@ public class RemoteControlApp {
 
                     switch (resource) {
                         case 1:
-                            System.out.print("Insert CO2 sample timing: ");
-                            int co2sampling = scanner.nextInt();
-                            setCO2Sampling(co2sampling);
+                            System.out.print("Insert Illumination sample timing: ");
+                            int illuminationSampling = scanner.nextInt();
+                            setIlluminationSampling(illuminationSampling);
                             break;
                         case 2:
-                            System.out.print("Insert Light sample timing: ");
-                            int lightSampling = scanner.nextInt();
-                            setLightSampling(lightSampling);
-                            break;
-                        case 3:
-                            System.out.print("Insert Farm Phase sample timing: ");
-                            int phaseSampling = scanner.nextInt();
-                            setPhaseSampling(phaseSampling);
-                            break;
-                        case 4:
-                            System.out.print("Insert Moisture sample timing: ");
-                            int moistureSampling = scanner.nextInt();
-                            setMoistureSampling(moistureSampling);
-                            break;
-                        case 5:
-                            System.out.print("Insert Temperature sample timing: ");
-                            int temperatureSampling = scanner.nextInt();
-                            setTemperatureSampling(temperatureSampling);
+                            System.out.print("Insert Sprinkler sample timing: ");
+                            int sprinklerSampling = scanner.nextInt();
+                            setSprinklerSampling(sprinklerSampling);
                             break;
                         default:
                             System.out.println("Invalid resource");
@@ -158,27 +143,11 @@ public class RemoteControlApp {
     }
 
 
-    private static void setCO2Sampling(int co2sampling) {
-        CoapClient client = new CoapClient(CO2_RESOURCE_URI);        
+    private static void setIlluminationSampling(int illuminationSampling) {
+                
     }
 
-    private static void setLightSampling(int co2sampling) {
-        CoapClient client = new CoapClient(LIGHT_RESOURCE_URI);        
+    private static void setSprinklerSampling(int co2sampling) {
 
-    }
-
-    private static void setPhaseSampling(int co2sampling) {
-        CoapClient client = new CoapClient(PHASE_RESOURCE_URI);        
-
-    }
-
-    private static void setMoistureSampling(int co2sampling) {
-        CoapClient client = new CoapClient(SOIL_RESOURCE_URI);        
-
-    }
-
-    private static void setTemperatureSampling(int co2sampling) {
-        CoapClient client = new CoapClient(SOIL_RESOURCE_URI);        
- 
     }
 }
