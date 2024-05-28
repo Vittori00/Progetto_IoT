@@ -26,7 +26,7 @@ public class SensorResource extends CoapResource {
         String payload = exchange.getRequestText();
         JSONObject json = new JSONObject(payload);
         String name = json.getString("name");
-        String address = json.getString("address");
+        String address = exchange.getSourceAddress().getHostAddress();
         String type = json.getString("type");
         int sampling = json.getInt("sampling");
 

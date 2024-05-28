@@ -8,6 +8,7 @@
 #include "sys/log.h"
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
+#define SERVER_EP "coap://[fd00::1]:5683" //localhost ip6
 
 extern coap_resource_t res_co2, res_light, res_phase, res_sampling;
 static struct etimer et;
@@ -19,7 +20,7 @@ PROCESS_THREAD(illumination_server, ev, data)
 {
   PROCESS_BEGIN();
   // inizieremo il processo di registrazione
- 
+  
 
 
   //qui sarà finito 
