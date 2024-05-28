@@ -25,16 +25,20 @@ public class SensorResource extends CoapResource {
     public void handlePOST(CoapExchange exchange) {
         String payload = exchange.getRequestText();
         JSONObject json = new JSONObject(payload);
-        String sensor = json.getString("sensor");
-        String state = json.getString("state");
+        String name = json.getString("name");
+        String address = json.getString("address");
+        String type = json.getString("type");
+        int sampling = json.getInt("sampling");
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "INSERT INTO sensors (sensor, state) VALUES (?, ?)";
+            String query = "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, sensor);
-            stmt.setString(2, state);
+            stmt.setString(1, name);
+            stmt.setString(2, address);
+            stmt.setString(3, type);
+            stmt.setInt(4, sampling);
             stmt.executeUpdate();
-            exchange.respond("Sensor resource created");
+            exchange.respond("Actuator resource created");
         } catch (SQLException e) {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
@@ -45,12 +49,14 @@ public class SensorResource extends CoapResource {
     public void handleGET(CoapExchange exchange) {
         StringBuilder response = new StringBuilder();
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "SELECT * FROM sensors";
+            String query = "SELECT * FROM devices WHERE type = 'sensor'";
             PreparedStatement stmt = conn.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                response.append("{sensor: \"").append(rs.getString("sensor"))
-                        .append("\", state: \"").append(rs.getString("state")).append("\"}\n");
+                response.append("{sensor: \"").append(rs.getString("name"))
+                        .append("\", address: \"").append(rs.getString("address"))
+                        .append("\", sampling: \"").append(rs.getString("sampling"))
+                        .append("\"}\n");
             }
             exchange.respond(response.toString());
         } catch (SQLException e) {
