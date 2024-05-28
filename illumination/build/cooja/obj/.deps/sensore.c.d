@@ -24,7 +24,7 @@ build/cooja/obj/sensore.o: sensore.c \
  ../../../os/net/app-layer/coap/coap-engine.h \
  ../../../os/net/app-layer/coap/coap-observe.h \
  ../../../os/net/app-layer/coap/coap-separate.h \
- ../../../os/net/app-layer/coap/coap-observe-client.h global_variables.h \
+ ../../../os/net/app-layer/coap/coap-observe-client.h \
  ../../../os/sys/log.h ../../../os/sys/log-conf.h
 ../../../os/net/app-layer/coap/module-macros.h:
 ../../../os/contiki.h:
@@ -67,6 +67,5 @@ project-conf.h:
 ../../../os/net/app-layer/coap/coap-observe.h:
 ../../../os/net/app-layer/coap/coap-separate.h:
 ../../../os/net/app-layer/coap/coap-observe-client.h:
-global_variables.h:
 ../../../os/sys/log.h:
 ../../../os/sys/log-conf.h:

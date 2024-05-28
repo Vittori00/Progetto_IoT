@@ -133,8 +133,17 @@ public class RemoteControlApp {
     }
 
     private static void setIlluminationSampling(int illuminationSampling) {
+
         CoapClient client = new CoapClient(ILLUMINATION_RESOURCE_URI);
-        
+        JSONObject json = new JSONObject();
+        json.put("sampling", illuminationSampling);
+
+        CoapResponse response = client.post(json.toString(), 0);
+        if (response != null) {
+            System.out.println("Response: " + response.getResponseText());
+        } else {
+            System.out.println("No response from server.");
+        }
 
     }
 

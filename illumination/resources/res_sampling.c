@@ -25,5 +25,5 @@ res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buf
     coap_get_payload(request, &payload);
     sscanf((const char *)payload, "{\"sampling\": %d}", &sampling);
     printf("Tempo di campionamento aggiornato a: %d secondi \n", sampling);
-    coap_set_payload(response, &payload);
+    coap_set_payload(response, &payload , sizeof(payload));
 }

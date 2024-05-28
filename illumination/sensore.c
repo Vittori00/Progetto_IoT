@@ -9,8 +9,9 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 
-extern coap_resource_t res_co2, res_light, res_phase;
+extern coap_resource_t res_co2, res_light, res_phase , res_sampling;
 static struct etimer et;
+extern int sampling;
 PROCESS(illumination_server, "Illumination Server");
 AUTOSTART_PROCESSES(&illumination_server);
 
@@ -25,7 +26,8 @@ PROCESS_THREAD(illumination_server, ev, data)
   coap_activate_resource(&res_co2, "co2");
   coap_activate_resource(&res_light, "light");
   coap_activate_resource(&res_phase, "phase");
-  etimer_set(&et, CLOCK_SECOND * 4);
+  coap_activate_resource(&res_sampling, "sampling");
+  etimer_set(&et, CLOCK_SECOND * sampling);
   while(1) {
     PROCESS_WAIT_EVENT();
     
@@ -37,7 +39,7 @@ PROCESS_THREAD(illumination_server, ev, data)
       res_light.trigger();
       res_phase.trigger();
 
-      etimer_set(&et, CLOCK_SECOND * 10);
+      etimer_set(&et, CLOCK_SECOND * sampling);
     }
   }                             
 
