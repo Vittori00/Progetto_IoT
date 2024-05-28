@@ -11,11 +11,8 @@ public class RemoteControlApp {
     private static final String COAP_ACTUATORS_URI = "coap://localhost/actuators";
     private static final String COAP_SENSORS_URI = "coap://localhost/sensors";
 
-    private static final String SOIL_RESOURCE_URI = "coap://[fd00::203:3:3:3]/soil";
-
-    private static final String CO2_RESOURCE_URI = "coap://[fd00::202:2:2:2]/co2";
-    private static final String LIGHT_RESOURCE_URI = "coap://[fd00::202:2:2:2]/light";
-    private static final String PHASE_RESOURCE_URI = "coap://[fd00::202:2:2:2]/phase";
+    private static final String SPRINKLER_RESOURCE_URI = "coap://[fd00::203:3:3:3]/sampling";
+    private static final String ILLUMINATION_RESOURCE_URI = "coap://[fd00::202:2:2:2]/sampling";
 
 
     public static void main(String[] args) {
@@ -26,13 +23,11 @@ public class RemoteControlApp {
 
         while (true) {
             System.out.println("Remote Control Application");
-            System.out.println("1. Turn on a sensor");
-            System.out.println("2. Turn off a sensor");
-            System.out.println("3. Turn on an actuator");
-            System.out.println("4. Turn off an actuator");
-            System.out.println("5. Show status of sensors");
-            System.out.println("6. Show status of actuators");
-            System.out.println("7. Set new sample timing");
+            System.out.println("1. Turn on a device");
+            System.out.println("2. Turn off a device");
+            System.out.println("3. Show status of sensors");
+            System.out.println("4. Show status of actuators");
+            System.out.println("5. Set new sample timing");
             System.out.print("\nScegli un'opzione: ");
 
             int choice = scanner.nextInt();
@@ -40,45 +35,39 @@ public class RemoteControlApp {
 
             switch (choice) {
                 case 1:
-                    // Turn on sensor
-                    System.out.print("Insert sensor to turn on: ");
-                    String sensorOn = scanner.nextLine();
-                    sendCommand(sensors, sensorOn, "on");
+                    // Turn on device
+                    System.out.print("Insert type of sensor to turn on (sensor/actuator): ");
+                    String type = scanner.nextLine();
+                    System.out.print("Insert name of sensor to turn on: ");
+                    String name = scanner.nextLine();
+                    if (type.equals("sensor")) {
+                        System.out.print("Insert sampling time: ");
+                        int sampling = scanner.nextInt();
+                        scanner.nextLine();
+                        turnOnDevice(sensors, name, sampling);
+                    } else if (type.equals("actuator")) {
+                        turnOnDevice(actuators, name, 0);
+                    }
                     break;
                 case 2:
-                    // Turn off a sensor
+                    // Turn off a device
                     System.out.print("Insert sensor to turn off: ");
-                    String sensorOff = scanner.nextLine();
-                    sendCommand(sensors, sensorOff, "off");
+                    String sensorNameOff = scanner.nextLine();
+                    turnOffDevice(sensors, sensorNameOff);
                     break;
                 case 3:
-                    // Turn on actuator
-                    System.out.print("Insert actuator to turn on: ");
-                    String actuatorOn = scanner.nextLine();
-                    sendCommand(actuators, actuatorOn, "on");
-                    break;
-                case 4:
-                    // Turn off a actuator
-                    System.out.print("Insert actuator to turn off: ");
-                    String actuatorOff = scanner.nextLine();
-                    sendCommand(actuators, actuatorOff, "off");
-                    break;
-                case 5:
                     // Show status of sensors
                     getStatus(sensors);
                     break;
-                case 6:
+                case 4:
                     // Show status of actuators
                     getStatus(actuators);
                     break;
-                case 7:
+                case 5:
                     // Choose resource
                     System.out.println("Choose a resource:");
-                    System.out.println("1. CO2");
-                    System.out.println("2. Light");
-                    System.out.println("3. Phase");
-                    System.out.println("4. Moisture");
-                    System.out.println("5. Temperature");
+                    System.out.println("1. Illumination");
+                    System.out.println("2. Sprinkler");
 
                     int resource = scanner.nextInt();
                     scanner.nextLine();
@@ -104,15 +93,16 @@ public class RemoteControlApp {
         }
     }
 
-    private static void sendCommand(CoapClient client, String device, String state) {
+    private static void turnOnDevice(CoapClient client, String name, int sampling) {
         JSONObject json = new JSONObject();
 
-        if (client.getURI().equals(COAP_SENSORS_URI)) {
-            json.put("sensor", device);
-        } else if (client.getURI().equals(COAP_ACTUATORS_URI)) {
-            json.put("actuator", device);
+        json.put("name", name);
+        if (sampling == 0) {
+            json.put("type", "actuator");
+        } else {
+            json.put("type", "sensor");
+            json.put("sampling", sampling);
         }
-        json.put("state", state);
 
         CoapResponse response = client.post(json.toString(), 0);
         if (response != null) {
@@ -142,12 +132,13 @@ public class RemoteControlApp {
         }
     }
 
-
     private static void setIlluminationSampling(int illuminationSampling) {
-                
+        CoapClient client = new CoapClient(ILLUMINATION_RESOURCE_URI);
+
     }
 
-    private static void setSprinklerSampling(int co2sampling) {
+    private static void setSprinklerSampling(int sprinklerSampling) {
+        CoapClient client = new CoapClient(SPRINKLER_RESOURCE_URI);
 
     }
 }
