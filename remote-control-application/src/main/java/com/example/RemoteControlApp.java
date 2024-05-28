@@ -53,7 +53,7 @@ public class RemoteControlApp {
                     // Turn off a device
                     System.out.print("Insert sensor to turn off: ");
                     String sensorNameOff = scanner.nextLine();
-                    turnOffDevice(sensors, sensorNameOff);
+                    //turnOffDevice(sensors, sensorNameOff);
                     break;
                 case 3:
                     // Show status of sensors
