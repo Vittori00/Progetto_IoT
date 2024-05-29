@@ -50,7 +50,6 @@ public class RegistrationResource extends CoapResource {
             if(sensorType == "sensor"){
                 dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime);
                 response = new Response(CoAP.ResponseCode.CREATED);
-                exchange.respond(response); 
             }else{
                 //stiamo registrando un attuatore
                 dbManager.register(sensorName, nodeAddress, sensorType , samplingTime); 
@@ -58,15 +57,19 @@ public class RegistrationResource extends CoapResource {
                 if(sensorName == "sensor0"){
                     //attuatore di illuminazione
                     dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
-                    String sensorReference = 
+                    String sensorReference = dbManager.select("sensor0");
                     response = new Response(CoAP.ResponseCode.CREATED);
                     exchange.respond(response);
-                    response.setPayload(sensorReference.toJSONString());
+                    response.setPayload(sensorReference);
                 }else{
                     //attuatore di irrigazione
+                    dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
+                    String sensorReference = dbManager.select("sensor1");
+                    response = new Response(CoAP.ResponseCode.CREATED);
+                    exchange.respond(response);
+                    response.setPayload(sensorReference);
                 }
             }
-            response = new Response(CoAP.ResponseCode.CREATED);
             exchange.respond(response);
             
             ///observe(new IlluminationResource(sensorType, nodeAddress)); solo se sensore

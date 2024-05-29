@@ -15,22 +15,27 @@
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 0
 
-void client_chunk_handler(coap_message_t *response) {
-    const uint8_t *chunk;
-    if (response == NULL) {
-        printf("Request timed out\n");
-        return;
-    }
-    int len = coap_get_payload(response, &chunk);
-    char payload[len + 1];
-    memcpy(payload, chunk, len);
-    payload[len] = '\0';  // Ensure null-terminated string
-    printf("Response: %i\n", response->code);
-    if (response->code == GOOD_ACK) {
-        printf("Registration successful\n");
-    } else {
-        printf("Registration failed\n");
-    }
+void client_chunk_handler(coap_message_t *response)
+{
+  const uint8_t *chunk;
+  if (response == NULL)
+  {
+    printf("Request timed out\n");
+    return;
+  }
+  int len = coap_get_payload(response, &chunk);
+  char payload[len + 1];
+  memcpy(payload, chunk, len);
+  payload[len] = '\0'; // Ensure null-terminated string
+  printf("Response: %i\n", response->code);
+  if (response->code == GOOD_ACK)
+  {
+    printf("Registration successful\n");
+  }
+  else
+  {
+    printf("Registration failed\n");
+  }
 }
 
 extern coap_resource_t res_co2, res_light, res_phase, res_sampling;
@@ -52,14 +57,13 @@ PROCESS_THREAD(illumination_server, ev, data)
   printf("REGISTRATION TO THE SERVER...\n");
   coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
   coap_set_header_uri_path(request, "/registration");
+  printf("MESSAGGIO INIZIALIZZATO\n");
   cJSON *package = cJSON_CreateObject();
-    LOG_ERR("Failed to create JSON object\n");
-    PROCESS_EXIT();
-  
+
   cJSON_AddStringToObject(package, "s", "sensor0");
   cJSON_AddStringToObject(package, "t", "sensor");
   cJSON_AddNumberToObject(package, "c", sampling);
-
+  printf("oggetto json\n");
   char *payload = cJSON_PrintUnformatted(package);
   if (payload == NULL)
   {
@@ -71,7 +75,7 @@ PROCESS_THREAD(illumination_server, ev, data)
   coap_set_payload(request, (uint8_t *)payload, strlen(payload));
   COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
   printf("REGISTRATION TO THE SERVER COMPLETED\n");
-  
+
   coap_activate_resource(&res_co2, "co2");
   coap_activate_resource(&res_light, "light");
   coap_activate_resource(&res_phase, "phase");
