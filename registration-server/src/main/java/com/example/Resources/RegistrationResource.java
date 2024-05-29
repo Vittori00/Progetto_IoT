@@ -35,44 +35,41 @@ public class RegistrationResource extends CoapResource {
         String payloadString = exchange.getRequestText();
         System.out.println("Payload received: " + payloadString + " \nlunghezza: " + payloadString.length());
         System.out.println("IP address: " + nodeAddress + "\n");
-        JSONObject json = null;
-        try {
-            JSONParser parser = new JSONParser();
-            json = (JSONObject) parser.parse(payloadString);
-            System.out.println("Parsed JSON: " + json);
-            } catch (org.json.simple.parser.ParseException e) {
-                e.printStackTrace();
-            }finally{} //da sistemare
-            String sensorName = (String) json.get("s");
-            String sensorType = (String) json.get("t");
-            int samplingTime = (int) json.get("c");
-            //dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime);  //samplingTime sarà 0 negli attuatori
-            if(sensorType == "sensor"){
-                dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime);
+
+        JSONObject json = new JSONObject(payloadString);
+        String sensorName = (String) json.get("s");
+        String sensorType = (String) json.get("t");
+        int samplingTime = (int) json.get("c");
+        System.out.println("Parsed JSON: " + json);
+        // dbManager.register(sensorName, nodeAddress, sensorType , samplingTime);
+        // //samplingTime sarà 0 negli attuatori
+        if (sensorType.equals("sensor")) {
+            dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
+            response = new Response(CoAP.ResponseCode.CREATED);
+        } else {
+            // stiamo registrando un attuatore
+            dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
+            // dobbiamo inviare nella risposta l'ip del sensore al quale fanno riferimento
+            if (sensorName.equals("sensor0")) {
+                // attuatore di illuminazione
+                dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
+                String sensorReference = dbManager.select("sensor0");
                 response = new Response(CoAP.ResponseCode.CREATED);
-            }else{
-                //stiamo registrando un attuatore
-                dbManager.register(sensorName, nodeAddress, sensorType , samplingTime); 
-                //dobbiamo inviare nella risposta l'ip del sensore al quale fanno riferimento 
-                if(sensorName == "sensor0"){
-                    //attuatore di illuminazione
-                    dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
-                    String sensorReference = dbManager.select("sensor0");
-                    response = new Response(CoAP.ResponseCode.CREATED);
-                    exchange.respond(response);
-                    response.setPayload(sensorReference);
-                }else{
-                    //attuatore di irrigazione
-                    dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
-                    String sensorReference = dbManager.select("sensor1");
-                    response = new Response(CoAP.ResponseCode.CREATED);
-                    exchange.respond(response);
-                    response.setPayload(sensorReference);
-                }
+                exchange.respond(response);
+                response.setPayload(sensorReference);
+            } else {
+                // attuatore di irrigazione
+                dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
+                String sensorReference = dbManager.select("sensor1");
+                response = new Response(CoAP.ResponseCode.CREATED);
+                exchange.respond(response);
+                response.setPayload(sensorReference);
             }
-            exchange.respond(response);
             
-            ///observe(new IlluminationResource(sensorType, nodeAddress)); solo se sensore
+        }
+        exchange.respond(response);
+        System.out.println("node at ip: " + nodeAddress + " registered");
+        /// observe(new IlluminationResource(sensorType, nodeAddress)); solo se sensore
     }
 
     private static void observe(IlluminationResource resource) {
