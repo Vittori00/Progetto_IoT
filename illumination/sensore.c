@@ -11,7 +11,6 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 #define SAMPLING_TIME 10
-// #define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 0
 
@@ -63,7 +62,6 @@ PROCESS_THREAD(illumination_server, ev, data)
   cJSON_AddStringToObject(package, "s", "sensor0");
   cJSON_AddStringToObject(package, "t", "sensor");
   cJSON_AddNumberToObject(package, "c", sampling);
-  printf("oggetto json\n");
   char *payload = cJSON_PrintUnformatted(package);
   if (payload == NULL)
   {

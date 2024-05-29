@@ -21,7 +21,8 @@ public class DBManager {
                     "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
                             "VALUES (?, ?, ?, ?, ?);");
             pstRegister = conn.prepareStatement(
-                    "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?) ON DUPLICATE KEY address = ? , sampling = ?;");
+                "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE address = VALUES(address), sampling = VALUES(sampling);");
             pstSelect = conn.prepareStatement(" SELECT address FROM devices WHERE name = ? ;");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -58,6 +59,7 @@ public class DBManager {
             pstRegister.setString(2, address);
             pstRegister.setString(3, type);
             pstRegister.setInt(4, sampling);
+            
             pstRegister.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
