@@ -179,12 +179,13 @@ PROCESS_THREAD(illumination_client, ev, data)
 
     // Registration
     coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+    coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
     coap_set_header_uri_path(request, "registration");
     LOG_INFO("Registering to the CoAP Server\n");
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
 
     // get iniziale per avviare lo stato iniziale delle risorse
+    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
     // CO2
     coap_set_header_uri_path(request, service_url_co2);
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_co2);
