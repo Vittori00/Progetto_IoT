@@ -48,11 +48,23 @@ public class RegistrationResource extends CoapResource {
             int samplingTime = (int) json.get("c");
             //dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime);  //samplingTime sarà 0 negli attuatori
             if(sensorType == "sensor"){
-                
-                dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime); 
+                dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime);
+                response = new Response(CoAP.ResponseCode.CREATED);
+                exchange.respond(response); 
             }else{
                 //stiamo registrando un attuatore
                 dbManager.register(sensorName, nodeAddress, sensorType , samplingTime); 
+                //dobbiamo inviare nella risposta l'ip del sensore al quale fanno riferimento 
+                if(sensorName == "sensor0"){
+                    //attuatore di illuminazione
+                    dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
+                    String sensorReference = 
+                    response = new Response(CoAP.ResponseCode.CREATED);
+                    exchange.respond(response);
+                    response.setPayload(sensorReference.toJSONString());
+                }else{
+                    //attuatore di irrigazione
+                }
             }
             response = new Response(CoAP.ResponseCode.CREATED);
             exchange.respond(response);

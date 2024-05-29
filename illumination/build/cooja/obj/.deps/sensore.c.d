@@ -26,7 +26,7 @@ build/cooja/obj/sensore.o: sensore.c \
  ../../../os/net/app-layer/coap/coap-separate.h \
  ../../../os/net/app-layer/coap/coap-observe-client.h \
  ../../../os/net/app-layer/coap/coap-blocking-api.h \
- ../../../os/net/app-layer/coap/coap-request-state.h \
+ ../../../os/net/app-layer/coap/coap-request-state.h ../cJSON/cJSON.h \
  ../../../os/sys/log.h ../../../os/sys/log-conf.h
 ../../../os/net/app-layer/coap/module-macros.h:
 ../../../os/contiki.h:
@@ -71,5 +71,6 @@ project-conf.h:
 ../../../os/net/app-layer/coap/coap-observe-client.h:
 ../../../os/net/app-layer/coap/coap-blocking-api.h:
 ../../../os/net/app-layer/coap/coap-request-state.h:
+../cJSON/cJSON.h:
 ../../../os/sys/log.h:
 ../../../os/sys/log-conf.h:

@@ -4,14 +4,16 @@
 #include "contiki.h"
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
-#include "cJSON"
+#include "../cJSON/cJSON.h"
 
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
+#define SAMPLING_TIME 10
 // #define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
+#define GOOD_ACK 0
 
 void client_chunk_handler(coap_message_t *response) {
     const uint8_t *chunk;
@@ -26,7 +28,6 @@ void client_chunk_handler(coap_message_t *response) {
     printf("Response: %i\n", response->code);
     if (response->code == GOOD_ACK) {
         printf("Registration successful\n");
-        registered = 1;
     } else {
         printf("Registration failed\n");
     }
@@ -35,6 +36,7 @@ void client_chunk_handler(coap_message_t *response) {
 extern coap_resource_t res_co2, res_light, res_phase, res_sampling;
 static struct etimer et;
 extern int sampling;
+
 PROCESS(illumination_server, "Illumination Server");
 AUTOSTART_PROCESSES(&illumination_server);
 
@@ -51,26 +53,25 @@ PROCESS_THREAD(illumination_server, ev, data)
   coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
   coap_set_header_uri_path(request, "/registration");
   cJSON *package = cJSON_CreateObject();
-  if (package == NULL)
-  {
     LOG_ERR("Failed to create JSON object\n");
     PROCESS_EXIT();
-  }
+  
   cJSON_AddStringToObject(package, "s", "sensor0");
   cJSON_AddStringToObject(package, "t", "sensor");
-  cJSON_AddStringToObject(package, "c", sampling);
+  cJSON_AddNumberToObject(package, "c", sampling);
 
   char *payload = cJSON_PrintUnformatted(package);
   if (payload == NULL)
   {
     LOG_ERR("Failed to print JSON object\n");
-    cJSON_Delete(root);
+    cJSON_Delete(package);
     PROCESS_EXIT();
   }
   printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
   coap_set_payload(request, (uint8_t *)payload, strlen(payload));
   COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
   printf("REGISTRATION TO THE SERVER COMPLETED\n");
+  
   coap_activate_resource(&res_co2, "co2");
   coap_activate_resource(&res_light, "light");
   coap_activate_resource(&res_phase, "phase");
