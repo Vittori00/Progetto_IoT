@@ -25,6 +25,7 @@ res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buf
     const uint8_t *payload = NULL;
     coap_get_payload(request, &payload);
     sscanf((const char *)payload, "{\"sampling\": %d}", &sampling);
+    coap_set_header_content_format(response, APPLICATION_JSON);
     printf("Tempo di campionamento aggiornato a: %d secondi \n", sampling);
-    coap_set_payload(response, &payload , sizeof(payload));
+    coap_set_payload(response, payload , strlen((char *)buffer)); //qui ho modificato cose
 }

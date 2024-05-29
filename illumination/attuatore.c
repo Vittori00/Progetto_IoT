@@ -11,6 +11,7 @@
 #include "coap-log.h"
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
+#define TOGGLE_INTERVAL 10
 
 // #define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
@@ -19,7 +20,6 @@ char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
 char *service_url_phase = "/phase";
 
-#define TOGGLE_INTERVAL 10
 PROCESS(illumination_client, "Illumination Client");
 AUTOSTART_PROCESSES(&illumination_client);
 
@@ -178,11 +178,7 @@ PROCESS_THREAD(illumination_client, ev, data)
     PROCESS_BEGIN();
 
     // Registration
-    coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-    coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-    coap_set_header_uri_path(request, "registration");
-    LOG_INFO("Registering to the CoAP Server\n");
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+    
 
     // get iniziale per avviare lo stato iniziale delle risorse
     coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
