@@ -172,7 +172,7 @@ void update_led_state()
     }
 }
 
-PROCESS_THREAD(er_example_client, ev, data)
+PROCESS_THREAD(illumination_client, ev, data)
 {
     static coap_endpoint_t server_ep;
     static coap_message_t request[1];

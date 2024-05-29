@@ -5,8 +5,6 @@
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
 
-#include "appVar.h"
-
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "App"
