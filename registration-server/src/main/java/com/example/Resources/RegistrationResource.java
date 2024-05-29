@@ -3,12 +3,15 @@ package com.example.Resources;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapResponse;
+import org.eclipse.californium.core.coap.CoAP;
+import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
-
 import org.json.JSONObject;
-
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import com.example.CoapObserver;
 import com.example.DBManager;
+import com.google.protobuf.TextFormat.ParseException;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -27,53 +30,37 @@ public class RegistrationResource extends CoapResource {
     @Override
     public void handlePOST(CoapExchange exchange) {
         exchange.accept();
-
-        InetAddress sensorAddress = exchange.getSourceAddress();
-        CoapClient client = new CoapClient("coap://[" + sensorAddress.getHostAddress() + "]:5683/registration");
-        CoapResponse response = client.get();
-
-        String responseCode = response.getCode().toString();
-        if(!responseCode.startsWith("2")){
-            System.out.println("Error: " + responseCode);
-            return;
-        }
-
-        String payload = response.getResponseText();
-        System.out.println(sensorAddress.getHostAddress() + ": " + payload);
-        String name = payload.substring(payload.indexOf(",</") + 2, payload.indexOf(">"));
-        System.out.println(payload.substring(payload.indexOf(",</") + 2, payload.indexOf(">")));
-
-        IlluminationResource resource = new IlluminationResource(name, sensorAddress.getHostAddress());
-        observe(resource);
-        dbManager.register(name, sensorAddress.getHostAddress(), "sensor", 10);
-        System.out.println("Illumination Sensor resource inserted into the database.");
-    }
-
-    
-    
-    /*
-    @Override
-    public void handleGET(CoapExchange exchange) {
-        StringBuilder response = new StringBuilder();
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "SELECT * FROM devices WHERE type = 'sensor'";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                response.append("{sensor: \"").append(rs.getString("name"))
-                        .append("\", address: \"").append(rs.getString("address"))
-                        .append("\", sampling: \"").append(rs.getString("sampling"))
-                        .append("\"}\n");
+        Response response;
+        String nodeAddress = exchange.getSourceAddress().getHostAddress();
+        String payloadString = exchange.getRequestText();
+        System.out.println("Payload received: " + payloadString + " \nlunghezza: " + payloadString.length());
+        System.out.println("IP address: " + nodeAddress + "\n");
+        JSONObject json = null;
+        try {
+            JSONParser parser = new JSONParser();
+            json = (JSONObject) parser.parse(payloadString);
+            System.out.println("Parsed JSON: " + json);
+            } catch (org.json.simple.parser.ParseException e) {
+                e.printStackTrace();
+            }finally{} //da sistemare
+            String sensorName = (String) json.get("s");
+            String sensorType = (String) json.get("t");
+            int samplingTime = (int) json.get("c");
+            //dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime);  //samplingTime sarà 0 negli attuatori
+            if(sensorType == "sensor"){
+                
+                dbManager.register(sensorName, nodeAddress, sensorType ,  samplingTime); 
+            }else{
+                //stiamo registrando un attuatore
+                dbManager.register(sensorName, nodeAddress, sensorType , samplingTime); 
             }
-            exchange.respond(response.toString());
-        } catch (SQLException e) {
-            e.printStackTrace();
-            exchange.respond("Internal Server Error");
-        }
+            response = new Response(CoAP.ResponseCode.CREATED);
+            exchange.respond(response);
+            
+            ///observe(new IlluminationResource(sensorType, nodeAddress)); solo se sensore
     }
-    */
 
-    private static void observe(IlluminationResource resource){
+    private static void observe(IlluminationResource resource) {
         CoapObserver obs = new CoapObserver(resource);
         obs.startObserving();
     }
