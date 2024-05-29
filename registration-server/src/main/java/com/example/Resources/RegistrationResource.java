@@ -45,36 +45,12 @@ public class RegistrationResource extends CoapResource {
 
         IlluminationResource resource = new IlluminationResource(name, sensorAddress.getHostAddress());
         observe(resource);
-        dbManager.regi
-
-        /*
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-            String query = "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, name);
-            stmt.setString(2, address);
-            stmt.setString(3, type);
-            if (type.equals("sensor")) {
-                stmt.setInt(4, sampling);
-            }
-            stmt.executeUpdate();
-            if (type.equals("sensor")) {
-                exchange.respond("Sensor resource created");
-            } else {
-                exchange.respond("Actuator resource created");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            exchange.respond("Internal Server Error");
-        }
-        
-
-        if (type.equals("actuator")) {
-            observe(new IlluminationResource(name, address));
-        }
-        */
+        dbManager.register(name, sensorAddress.getHostAddress(), "sensor", 10);
+        System.out.println("Illumination Sensor resource inserted into the database.");
     }
 
+    
+    
     /*
     @Override
     public void handleGET(CoapExchange exchange) {
