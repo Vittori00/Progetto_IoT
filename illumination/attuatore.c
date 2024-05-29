@@ -12,20 +12,38 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 
-#define SERVER_EP "coap://[fd00::203:3:3:3]:5683"  
+//#define SERVER_EP "coap://[fd00::203:3:3:3]:5683"  
 //#define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
+#define SERVER_EP "coap://[fd00::1]:5683" //localhost ip6
+
+
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
 char *service_url_phase = "/phase";
 
 #define TOGGLE_INTERVAL 10
-PROCESS(er_example_client, "Erbium Example Client");
-AUTOSTART_PROCESSES(&er_example_client);
+PROCESS(illumination_client, "Illumination Client");
+AUTOSTART_PROCESSES(&illumination_client);
 
 static void update_led_state();
 int light_attuatore = 0;
 int co2 = 0;
 int fase = 0;
+
+
+void client_chunk_handler(coap_message_t *response){
+  const uint8_t *chunk;
+
+  if (response == NULL){
+    LOG_INFO("Request timed out");
+    return;
+  }
+
+  int len = coap_get_payload(response, &chunk);
+  LOG_INFO("Received %d bytes:\n", len);
+  LOG_INFO("Response: %s", chunk);
+}
+
 
 void client_chunk_handler_co2(coap_message_t *response)
 {
@@ -164,6 +182,11 @@ PROCESS_THREAD(er_example_client, ev, data)
     // get iniziale per avviare lo stato iniziale della luce
     coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
     coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+
+    // Registration
+    coap_set_header_uri_path(request, "registration");
+    LOG_INFO("Registering to the CoAP Server\n");
+    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
     
     // CO2
     coap_set_header_uri_path(request, service_url_co2);

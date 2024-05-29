@@ -13,7 +13,7 @@
 #define LOG_LEVEL LOG_LEVEL_APP
 #define SERVER_EP "coap://[fd00::1]:5683" //localhost ip6
 
-void client_chunk_handler_co2(coap_message_t *response){
+void client_chunk_handler(coap_message_t *response){
   const uint8_t *chunk;
 
   if (response == NULL){
