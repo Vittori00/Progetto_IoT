@@ -12,9 +12,8 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 
-//#define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
-#define SERVER_EP "coap://[fd00::1]:5683" //localhost ip6
-
+// #define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
+#define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
@@ -29,20 +28,20 @@ int light_attuatore = 0;
 int co2 = 0;
 int fase = 0;
 
+void client_chunk_handler(coap_message_t *response)
+{
+    const uint8_t *chunk;
 
-void client_chunk_handler(coap_message_t *response){
-  const uint8_t *chunk;
+    if (response == NULL)
+    {
+        LOG_INFO("Request timed out");
+        return;
+    }
 
-  if (response == NULL){
-    LOG_INFO("Request timed out");
-    return;
-  }
-
-  int len = coap_get_payload(response, &chunk);
-  LOG_INFO("Received %d bytes:\n", len);
-  LOG_INFO("Response: %s", chunk);
+    int len = coap_get_payload(response, &chunk);
+    LOG_INFO("Received %d bytes:\n", len);
+    LOG_INFO("Response: %s", chunk);
 }
-
 
 void client_chunk_handler_co2(coap_message_t *response)
 {
@@ -178,10 +177,15 @@ PROCESS_THREAD(illumination_client, ev, data)
 
     PROCESS_BEGIN();
 
-    // get iniziale per avviare lo stato iniziale della luce
+    // Registration
+    coap_set_header_uri_path(request, "registration");
+    LOG_INFO("Registering to the CoAP Server\n");
+    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+
+    // get iniziale per avviare lo stato iniziale delle risorse
     coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
     coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
-    
+
     // CO2
     coap_set_header_uri_path(request, service_url_co2);
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_co2);
@@ -205,11 +209,6 @@ PROCESS_THREAD(illumination_client, ev, data)
     // REGISTRATION PER phase
     coap_set_header_uri_path(request, service_url_phase);
     coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
-
-    // Registration
-    coap_set_header_uri_path(request, "registration");
-    LOG_INFO("Registering to the CoAP Server\n");
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
 
     while (1)
     {
