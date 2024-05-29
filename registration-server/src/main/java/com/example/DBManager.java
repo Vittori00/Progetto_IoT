@@ -3,10 +3,11 @@ package com.example;
 import java.sql.*;
 
 public class DBManager {
-    private String DB_URL;
-    private String user;
-    private String password;
+    public String DB_URL;
+    public String user;
+    public String password;
     private PreparedStatement pstInsert;
+    private PreparedStatement pstRegister;
 
     public DBManager(String URL, String user, String password){
         this.DB_URL = URL;
@@ -19,6 +20,9 @@ public class DBManager {
                 "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
                     "VALUES (?, ?, ?, ?, ?);"
             );
+            pstRegister = conn.prepareStatement(
+                "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?);"  
+            );
 
         }catch(SQLException e){
             e.printStackTrace();
@@ -28,14 +32,28 @@ public class DBManager {
 
     public void insert(String sensorName, String sensorAddress, String resourceName, int resourceValue, int timestamp){
         try{
-            pstInsert.setString(2, sensorName);
-            pstInsert.setString(3, sensorAddress);
-            pstInsert.setString(4, resourceName);
-            pstInsert.setInt(5, resourceValue);
-            pstInsert.setInt(6, timestamp);
+            pstInsert.setString(1, sensorName);
+            pstInsert.setString(2, sensorAddress);
+            pstInsert.setString(3, resourceName);
+            pstInsert.setInt(4, resourceValue);
+            pstInsert.setInt(5, timestamp);
             pstInsert.executeUpdate();
         }catch(SQLException e){
             e.printStackTrace();
         }
     }
+
+    public void register(String name, String address, String type, int sampling){
+        try{
+            pstRegister.setString(1, name);
+            pstRegister.setString(2, address);
+            pstRegister.setString(3, type);
+            pstRegister.setInt(4, sampling);
+            pstRegister.executeUpdate();
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
+
+
 }

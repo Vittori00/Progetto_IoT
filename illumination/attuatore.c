@@ -12,7 +12,6 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 
-//#define SERVER_EP "coap://[fd00::203:3:3:3]:5683"  
 //#define SERVER_EP "coap://[fd00::202:2:2:2]:5683"
 #define SERVER_EP "coap://[fd00::1]:5683" //localhost ip6
 
@@ -182,11 +181,6 @@ PROCESS_THREAD(illumination_client, ev, data)
     // get iniziale per avviare lo stato iniziale della luce
     coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
     coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
-
-    // Registration
-    coap_set_header_uri_path(request, "registration");
-    LOG_INFO("Registering to the CoAP Server\n");
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
     
     // CO2
     coap_set_header_uri_path(request, service_url_co2);
@@ -211,6 +205,11 @@ PROCESS_THREAD(illumination_client, ev, data)
     // REGISTRATION PER phase
     coap_set_header_uri_path(request, service_url_phase);
     coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
+
+    // Registration
+    coap_set_header_uri_path(request, "registration");
+    LOG_INFO("Registering to the CoAP Server\n");
+    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
 
     while (1)
     {

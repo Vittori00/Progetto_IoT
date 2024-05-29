@@ -1,12 +1,16 @@
 package com.example.Resources;
 
+import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResource;
+import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 
 import org.json.JSONObject;
 
 import com.example.CoapObserver;
+import com.example.DBManager;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,9 +18,7 @@ import java.sql.SQLException;
 
 public class RegistrationResource extends CoapResource {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/CottonNet";
-    private static final String DB_USER = "admin";
-    private static final String DB_PASSWORD = "admin";
+    private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/CottonNet", "admin", "admin");
 
     public RegistrationResource(String name) {
         super(name);
@@ -24,13 +26,28 @@ public class RegistrationResource extends CoapResource {
 
     @Override
     public void handlePOST(CoapExchange exchange) {
-        String payload = exchange.getRequestText();
-        JSONObject json = new JSONObject(payload);
-        String name = json.getString("name");
-        String address = exchange.getSourceAddress().getHostAddress();
-        String type = json.getString("type");
-        int sampling = json.getInt("sampling");
+        exchange.accept();
 
+        InetAddress sensorAddress = exchange.getSourceAddress();
+        CoapClient client = new CoapClient("coap://[" + sensorAddress.getHostAddress() + "]:5683/registration");
+        CoapResponse response = client.get();
+
+        String responseCode = response.getCode().toString();
+        if(!responseCode.startsWith("2")){
+            System.out.println("Error: " + responseCode);
+            return;
+        }
+
+        String payload = response.getResponseText();
+        System.out.println(sensorAddress.getHostAddress() + ": " + payload);
+        String name = payload.substring(payload.indexOf(",</") + 2, payload.indexOf(">"));
+        System.out.println(payload.substring(payload.indexOf(",</") + 2, payload.indexOf(">")));
+
+        IlluminationResource resource = new IlluminationResource(name, sensorAddress.getHostAddress());
+        observe(resource);
+        dbManager.regi
+
+        /*
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             String query = "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(query);
@@ -50,11 +67,12 @@ public class RegistrationResource extends CoapResource {
             e.printStackTrace();
             exchange.respond("Internal Server Error");
         }
+        
 
         if (type.equals("actuator")) {
             observe(new IlluminationResource(name, address));
         }
-
+        */
     }
 
     /*
