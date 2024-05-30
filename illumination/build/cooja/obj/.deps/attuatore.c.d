@@ -52,7 +52,7 @@ build/cooja/obj/attuatore.o: attuatore.c \
  ../../../os/net/app-layer/coap/coap-blocking-api.h \
  ../../../os/net/app-layer/coap/coap-request-state.h \
  ../../../os/dev/leds.h ../../../os/dev/gpio-hal.h \
- ../../../arch/platform/cooja/./dev/gpio-hal-arch.h \
+ ../../../arch/platform/cooja/./dev/gpio-hal-arch.h ../cJSON/cJSON.h \
  ../../../os/net/app-layer/coap/coap-log.h ../../../os/sys/log.h \
  ../../../os/sys/log-conf.h
 ../../../os/net/app-layer/coap/module-macros.h:
@@ -142,6 +142,7 @@ project-conf.h:
 ../../../os/dev/leds.h:
 ../../../os/dev/gpio-hal.h:
 ../../../arch/platform/cooja/./dev/gpio-hal-arch.h:
+../cJSON/cJSON.h:
 ../../../os/net/app-layer/coap/coap-log.h:
 ../../../os/sys/log.h:
 ../../../os/sys/log-conf.h:

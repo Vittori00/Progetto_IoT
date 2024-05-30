@@ -50,13 +50,12 @@ build/cooja/obj/attuatore.o: attuatore.c \
  ../../../os/net/app-layer/coap/coap-separate.h \
  ../../../os/net/app-layer/coap/coap-observe-client.h \
  ../../../os/net/app-layer/coap/coap-blocking-api.h \
- ../../../os/net/app-layer/coap/coap-request-state.h \
- ../../../os/lib/random.h irrigation_model.h \
+ ../../../os/net/app-layer/coap/coap-request-state.h irrigation_model.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_trees.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_common.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_log.h \
- ../../../os/net/app-layer/coap/coap-log.h ../../../os/sys/log.h \
- ../../../os/sys/log-conf.h
+ ../cJSON/cJSON.h ../../../os/net/app-layer/coap/coap-log.h \
+ ../../../os/sys/log.h ../../../os/sys/log-conf.h
 ../../../os/net/app-layer/coap/module-macros.h:
 ../../../os/contiki.h:
 ../../../arch/platform/cooja/./contiki-conf.h:
@@ -141,11 +140,11 @@ project-conf.h:
 ../../../os/net/app-layer/coap/coap-observe-client.h:
 ../../../os/net/app-layer/coap/coap-blocking-api.h:
 ../../../os/net/app-layer/coap/coap-request-state.h:
-../../../os/lib/random.h:
 irrigation_model.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_trees.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_common.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_log.h:
+../cJSON/cJSON.h:
 ../../../os/net/app-layer/coap/coap-log.h:
 ../../../os/sys/log.h:
 ../../../os/sys/log-conf.h:

@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "string.h": "c"
+        "string.h": "c",
+        "cjson.h": "c",
+        "system_error": "c"
     },
     "java.configuration.updateBuildConfiguration": "interactive"
 }

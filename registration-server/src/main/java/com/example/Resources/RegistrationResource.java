@@ -63,7 +63,7 @@ public class RegistrationResource extends CoapResource {
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor1");
                 response = new Response(CoAP.ResponseCode.CREATED);
-                response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
+                response.setPayload(sensorReference); 
                 exchange.respond(response);
             }
             
