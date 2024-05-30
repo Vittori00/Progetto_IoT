@@ -54,14 +54,16 @@ public class RemoteControlApp {
 
                     switch (resource) {
                         case 1:
+                            String illuminationSensor = "sensor0";
                             System.out.print("Insert Illumination sample timing: ");
                             int illuminationSampling = scanner.nextInt();
-                            setIlluminationSampling(illuminationSampling);
+                            setSampling(illuminationSampling, illuminationSensor);
                             break;
                         case 2:
+                            String sprinklerSensor = "sensor1";
                             System.out.print("Insert Sprinkler sample timing: ");
                             int sprinklerSampling = scanner.nextInt();
-                            setSprinklerSampling(sprinklerSampling);
+                            setSampling(sprinklerSampling, sprinklerSensor);
                             break;
                         default:
                             System.out.println("Invalid resource");
@@ -73,7 +75,7 @@ public class RemoteControlApp {
         }
     }
 
-    private static void setIlluminationSampling(int illuminationSampling) {
+    private static void setSampling(int newSampling, String sensorName) {
         Connection connection = null;
         Statement statement = null;
         ResultSet resultSet = null;
@@ -81,16 +83,17 @@ public class RemoteControlApp {
         try {
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("SELECT address FROM devices WHERE name  = 'sensor0");
+            if (sensorName.equals("sensor0")) {
+                resultSet = statement.executeQuery("SELECT address FROM devices WHERE name  = 'sensor0");
+            } else if (sensorName.equals("sensor1")) {
+                resultSet = statement.executeQuery("SELECT address FROM devices WHERE name  = 'sensor1");
+            }
             
             String address = resultSet.getString("address");
 
             CoapClient client = new CoapClient("coap://[" + address + "]/sampling");
 
-            JSONObject json = new JSONObject();
-            json.put("sampling", illuminationSampling);
-
-            CoapResponse response = client.post(json.toString(), 0);
+            CoapResponse response = client.post(Integer.toString(newSampling), 0);
             if (response != null) {
                 System.out.println("Response: " + response.getResponseText());
             } else {
@@ -100,21 +103,6 @@ public class RemoteControlApp {
             e.printStackTrace();
         }
     }
-
-    private static void setSprinklerSampling(int sprinklerSampling) {
-        CoapClient client = new CoapClient(SPRINKLER_RESOURCE_URI);
-        JSONObject json = new JSONObject();
-        json.put("sampling", sprinklerSampling);
-
-        CoapResponse response = client.post(json.toString(), 0);
-        if (response != null) {
-            System.out.println("Response: " + response.getResponseText());
-        } else {
-            System.out.println("No response from server.");
-        }
-    }
-
-
 
     private static void getActiveDevices(){
         Connection connection = null;
