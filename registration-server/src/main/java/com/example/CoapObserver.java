@@ -5,61 +5,63 @@ import org.eclipse.californium.core.CoapHandler;
 import org.eclipse.californium.core.CoapObserveRelation;
 import org.eclipse.californium.core.CoapResponse;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 
-import com.example.Resources.IlluminationResource;
-public class CoapObserver {
+public class CoapObserver implements Runnable{
 	private CoapClient client;
 	private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/CottonNet", "admin", "admin");
-	private IlluminationResource resource;
+	private String sensorName;
+	//private String address;
 
-	public CoapObserver(IlluminationResource resource) {
-		client = new CoapClient("coap://[" + resource.getSensorAddress() + "]/" + resource.getResourceName());
-		// client = new CoapClient("coap://[fd00::202:2:2:2]/" + resource.getResourceName());
-		this.resource = resource;
+	public CoapObserver(String sensorName, String address) {
+		client = new CoapClient("coap://[" + address + "]:5683/observation");
+		this.sensorName = sensorName;
+		//this.address = address;
 	}
 
 	public void startObserving(){
 		CoapObserveRelation relation = client.observe(new CoapHandler() {
+			
+			@Override
 			public void onLoad(CoapResponse response) {
-				JSONObject json = new JSONObject(response.getResponseText());
-				if(json.has("CO2")){
-					String resouceName = "CO2";
-					int CO2 = json.getInt("CO2");
-					int timestamp = json.getInt("timestamp");
-					dbManager.insert("Illumination Sensor", resource.getSensorAddress(), resouceName, CO2, timestamp);
-					System.out.println("New CO2 of " + CO2 + "ppm registered at " + timestamp);
-				}
-				else if(json.has("Light")){
-					String resouceName = "Light";
-					int Light = json.getInt("Light");
-					int timestamp = json.getInt("timestamp");
-					dbManager.insert("Illumination Sensor", resource.getSensorAddress(), resouceName, Light, timestamp);
-					if (Light == 1) {
-						System.out.println("New Light phase registered at " + timestamp);
-					} else {
-						System.out.println("New Dark phase registered at " + timestamp);
+				String responseText = response.getResponseText();
+				JSONObject json = null;
+
+				try {
+					JSONParser parser = new JSONParser();
+					if (sensorName.equals("sensor0")) {
+						json = (JSONObject) parser.parse(responseText);
+						
+						int co2 = json.getInt("co2");
+						int light = json.getInt("light");
+						int phase = json.getInt("phase");
+						int timestamp = (int) System.currentTimeMillis();
+
+						dbManager.insertIlluminationMeasures(co2, light, phase, timestamp);
 					}
-				}
-				else if(json.has("Phase")){
-					String resouceName = "Phase";
-					int Phase = json.getInt("Phase");
-					int timestamp = json.getInt("timestamp");
-					dbManager.insert("Illumination Sensor", resource.getSensorAddress(), resouceName, Phase, timestamp);
-					if (Phase == 0) {
-						System.out.println("New Farm Phase 0 registered at " + timestamp);
-					} else {
-						System.out.println("New Farm Phase 1 registered at " + timestamp);
+					else if (sensorName.equals("sensor1")) {
+						json = (JSONObject) parser.parse(responseText);
+						int temperature = json.getInt("temperature");
+						int moisture = json.getInt("moisture");
+						int timestamp = json.getInt("timestamp");
+
+						dbManager.insertSprinklerMeasures(moisture, temperature, timestamp);
 					}
-				}
-				else {
-					System.out.println("Error: wrong message format from Illumination sensor ");
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 
+			@Override
 			public void onError() {
 				System.out.println("Nothing to observe");
 			}
 		});
 		relation.proactiveCancel();
+	}
+
+	@Override
+	public void run() {
+		startObserving();
 	}
 }

@@ -7,8 +7,9 @@ public class DBManager {
     public String user;
     public String password;
     private PreparedStatement pstSelect;
-    private PreparedStatement pstInsert;
     private PreparedStatement pstRegister;
+    private PreparedStatement pstInsertIlluminationMeasures;
+    private PreparedStatement pstInsertSprinklerMeasures;
 
     public DBManager(String URL, String user, String password) {
         this.DB_URL = URL;
@@ -17,13 +18,19 @@ public class DBManager {
 
         try {
             Connection conn = DriverManager.getConnection(DB_URL, this.user, this.password);
-            pstInsert = conn.prepareStatement(
-                    "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
-                            "VALUES (?, ?, ?, ?, ?);");
+            
             pstRegister = conn.prepareStatement(
                 "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE address = VALUES(address), sampling = VALUES(sampling);");
+            
             pstSelect = conn.prepareStatement(" SELECT address FROM devices WHERE name = ? ;");
+
+            pstInsertIlluminationMeasures = conn.prepareStatement(
+                "INSERT INTO illumination (co2, light, phase, timestamp) VALUES (?, ?, ?, ?)");
+
+            pstInsertSprinklerMeasures = conn.prepareStatement(
+                "INSERT INTO sprinkler (moisture, temperature, timestamp) VALUES (?, ?, ?)");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -40,18 +47,6 @@ public class DBManager {
         }
         return null;
     }
-    public void insert(String sensorName, String sensorAddress, String resourceName, int resourceValue, int timestamp) {
-        try {
-            pstInsert.setString(1, sensorName);
-            pstInsert.setString(2, sensorAddress);
-            pstInsert.setString(3, resourceName);
-            pstInsert.setInt(4, resourceValue);
-            pstInsert.setInt(5, timestamp);
-            pstInsert.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void register(String name, String address, String type, int sampling) {
         try {
@@ -66,4 +61,28 @@ public class DBManager {
         }
     }
 
+    public void insertIlluminationMeasures(int co2, int light, int phase, int timestamp) {
+        try {
+            pstInsertIlluminationMeasures.setInt(1, co2);
+            pstInsertIlluminationMeasures.setInt(2, light);
+            pstInsertIlluminationMeasures.setInt(3, phase);
+            pstInsertIlluminationMeasures.setInt(4, timestamp);
+            
+            pstInsertIlluminationMeasures.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertSprinklerMeasures(int moisture, int temperature, int timestamp) {
+        try {
+            pstInsertSprinklerMeasures.setInt(1, moisture);
+            pstInsertSprinklerMeasures.setInt(2, temperature);
+            pstInsertSprinklerMeasures.setInt(3, timestamp);
+            
+            pstInsertSprinklerMeasures.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
