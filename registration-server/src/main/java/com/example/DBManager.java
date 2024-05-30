@@ -7,7 +7,6 @@ public class DBManager {
     public String user;
     public String password;
     private PreparedStatement pstSelect;
-    private PreparedStatement pstInsert;
     private PreparedStatement pstRegister;
     private PreparedStatement pstInsertIlluminationMeasures;
     private PreparedStatement pstInsertSprinklerMeasures;
@@ -19,10 +18,6 @@ public class DBManager {
 
         try {
             Connection conn = DriverManager.getConnection(DB_URL, this.user, this.password);
-            
-            pstInsert = conn.prepareStatement(
-                    "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
-                            "VALUES (?, ?, ?, ?, ?);");
             
             pstRegister = conn.prepareStatement(
                 "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?) " +
@@ -51,19 +46,6 @@ public class DBManager {
             e.printStackTrace();
         }
         return null;
-    }
-    public void insert(String sensorName, String sensorAddress, String resourceName, int resourceValue, int timestamp) {
-        try {
-            pstInsert.setString(1, sensorName);
-            pstInsert.setString(2, sensorAddress);
-            pstInsert.setString(3, resourceName);
-            pstInsert.setInt(4, resourceValue);
-            pstInsert.setInt(5, timestamp);
-            
-            pstInsert.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     public void register(String name, String address, String type, int sampling) {
