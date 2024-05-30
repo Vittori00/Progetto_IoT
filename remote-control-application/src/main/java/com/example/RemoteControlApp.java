@@ -74,16 +74,30 @@ public class RemoteControlApp {
     }
 
     private static void setIlluminationSampling(int illuminationSampling) {
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
 
-        CoapClient client = new CoapClient(ILLUMINATION_RESOURCE_URI);
-        JSONObject json = new JSONObject();
-        json.put("sampling", illuminationSampling);
+        try {
+            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT address FROM devices WHERE name  = 'sensor0");
+            
+            String address = resultSet.getString("address");
 
-        CoapResponse response = client.post(json.toString(), 0);
-        if (response != null) {
-            System.out.println("Response: " + response.getResponseText());
-        } else {
-            System.out.println("No response from server.");
+            CoapClient client = new CoapClient("coap://[" + address + "]/sampling");
+
+            JSONObject json = new JSONObject();
+            json.put("sampling", illuminationSampling);
+
+            CoapResponse response = client.post(json.toString(), 0);
+            if (response != null) {
+                System.out.println("Response: " + response.getResponseText());
+            } else {
+                System.out.println("No response from server.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
