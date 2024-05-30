@@ -10,6 +10,7 @@ public class DBManager {
     private PreparedStatement pstInsert;
     private PreparedStatement pstRegister;
     private PreparedStatement pstInsertIlluminationMeasures;
+    private PreparedStatement pstInsertSprinklerMeasures;
 
     public DBManager(String URL, String user, String password) {
         this.DB_URL = URL;
@@ -18,6 +19,7 @@ public class DBManager {
 
         try {
             Connection conn = DriverManager.getConnection(DB_URL, this.user, this.password);
+            
             pstInsert = conn.prepareStatement(
                     "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
                             "VALUES (?, ?, ?, ?, ?);");
@@ -29,7 +31,10 @@ public class DBManager {
             pstSelect = conn.prepareStatement(" SELECT address FROM devices WHERE name = ? ;");
 
             pstInsertIlluminationMeasures = conn.prepareStatement(
-                "INSERT INTO illumination (co2, light, phase) VALUES (?, ?, ?)");
+                "INSERT INTO illumination (co2, light, phase, timestamp) VALUES (?, ?, ?, ?)");
+
+            pstInsertSprinklerMeasures = conn.prepareStatement(
+                "INSERT INTO sprinkler (moisture, temperature, timestamp) VALUES (?, ?, ?)");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,13 +79,26 @@ public class DBManager {
         }
     }
 
-    public void insertIlluminationMeasures(int co2, int light, int phase) {
+    public void insertIlluminationMeasures(int co2, int light, int phase, int timestamp) {
         try {
             pstInsertIlluminationMeasures.setInt(1, co2);
             pstInsertIlluminationMeasures.setInt(2, light);
             pstInsertIlluminationMeasures.setInt(3, phase);
+            pstInsertIlluminationMeasures.setInt(4, timestamp);
             
             pstInsertIlluminationMeasures.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertSprinklerMeasures(int moisture, int temperature, int timestamp) {
+        try {
+            pstInsertSprinklerMeasures.setInt(1, moisture);
+            pstInsertSprinklerMeasures.setInt(2, temperature);
+            pstInsertSprinklerMeasures.setInt(3, timestamp);
+            
+            pstInsertSprinklerMeasures.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
