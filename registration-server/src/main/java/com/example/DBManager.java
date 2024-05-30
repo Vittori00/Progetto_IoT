@@ -9,6 +9,7 @@ public class DBManager {
     private PreparedStatement pstSelect;
     private PreparedStatement pstInsert;
     private PreparedStatement pstRegister;
+    private PreparedStatement pstInsertIlluminationMeasures;
 
     public DBManager(String URL, String user, String password) {
         this.DB_URL = URL;
@@ -20,10 +21,16 @@ public class DBManager {
             pstInsert = conn.prepareStatement(
                     "INSERT INTO measures (sensorName, sensorAddress, resourceName, resourceValue, timestamp ) " +
                             "VALUES (?, ?, ?, ?, ?);");
+            
             pstRegister = conn.prepareStatement(
                 "INSERT INTO devices (name, address, type, sampling) VALUES (?, ?, ?, ?) " +
                 "ON DUPLICATE KEY UPDATE address = VALUES(address), sampling = VALUES(sampling);");
+            
             pstSelect = conn.prepareStatement(" SELECT address FROM devices WHERE name = ? ;");
+
+            pstInsertIlluminationMeasures = conn.prepareStatement(
+                "INSERT INTO illumination (co2, light, phase) VALUES (?, ?, ?)");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -47,6 +54,7 @@ public class DBManager {
             pstInsert.setString(3, resourceName);
             pstInsert.setInt(4, resourceValue);
             pstInsert.setInt(5, timestamp);
+            
             pstInsert.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,4 +74,15 @@ public class DBManager {
         }
     }
 
+    public void insertIlluminationMeasures(int co2, int light, int phase) {
+        try {
+            pstInsertIlluminationMeasures.setInt(1, co2);
+            pstInsertIlluminationMeasures.setInt(2, light);
+            pstInsertIlluminationMeasures.setInt(3, phase);
+            
+            pstInsertIlluminationMeasures.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
