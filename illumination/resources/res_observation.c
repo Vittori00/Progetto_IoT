@@ -1,4 +1,4 @@
-#include "contiki.h"
+/*#include "contiki.h"
 #include "contiki-net.h"
 #include "coap-engine.h"
 #include "machine_learning/temperature_prediction.h"
@@ -50,4 +50,4 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
 static void
 res_event_handler(void){
     coap_notify_observers(&res_observation);
-}
+}*/
