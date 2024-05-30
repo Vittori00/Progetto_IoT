@@ -6,6 +6,7 @@
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
 #include "os/dev/leds.h"
+#include "../cJSON/cJSON.h"
 
 /* Log configuration */
 #include "coap-log.h"
@@ -27,20 +28,27 @@ static void update_led_state();
 int light_attuatore = 0;
 int co2 = 0;
 int fase = 0;
-
 void client_chunk_handler(coap_message_t *response)
 {
     const uint8_t *chunk;
-
     if (response == NULL)
     {
-        LOG_INFO("Request timed out");
+        printf("Request timed out\n");
         return;
     }
-
     int len = coap_get_payload(response, &chunk);
-    LOG_INFO("Received %d bytes:\n", len);
-    LOG_INFO("Response: %s", chunk);
+    char payload[len + 1];
+    memcpy(payload, chunk, len);
+    payload[len] = '\0'; // Ensure null-terminated string
+    printf("Response: %i\n", response->code);
+    if (response->code == GOOD_ACK)
+    {
+        printf("Registration successful\n");
+    }
+    else
+    {
+        printf("Registration failed\n");
+    }
 }
 
 void client_chunk_handler_co2(coap_message_t *response)
@@ -178,7 +186,26 @@ PROCESS_THREAD(illumination_client, ev, data)
     PROCESS_BEGIN();
 
     // Registration
-    
+    printf("REGISTRATION TO THE SERVER...\n");
+    coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
+    coap_set_header_uri_path(request, "/registration");
+    printf("MESSAGGIO INIZIALIZZATO\n");
+    cJSON *package = cJSON_CreateObject();
+
+    cJSON_AddStringToObject(package, "s", "illumination");
+    cJSON_AddStringToObject(package, "t", "actuator");
+    cJSON_AddNumberToObject(package, "c", 0);
+    char *payload = cJSON_PrintUnformatted(package);
+    if (payload == NULL)
+    {
+        LOG_ERR("Failed to print JSON object\n");
+        cJSON_Delete(package);
+        PROCESS_EXIT();
+    }
+    printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+    coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+    printf("REGISTRATION TO THE SERVER COMPLETED\n");
 
     // get iniziale per avviare lo stato iniziale delle risorse
     coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
