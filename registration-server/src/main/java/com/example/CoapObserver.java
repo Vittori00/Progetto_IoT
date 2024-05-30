@@ -11,12 +11,12 @@ public class CoapObserver implements Runnable{
 	private CoapClient client;
 	private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/CottonNet", "admin", "admin");
 	private String sensorName;
-	private String address;
+	//private String address;
 
 	public CoapObserver(String sensorName, String address) {
 		client = new CoapClient("coap://[" + address + "]:5683/observation");
 		this.sensorName = sensorName;
-		this.address = address;
+		//this.address = address;
 	}
 
 	public void startObserving(){
@@ -35,7 +35,7 @@ public class CoapObserver implements Runnable{
 						int co2 = json.getInt("co2");
 						int light = json.getInt("light");
 						int phase = json.getInt("phase");
-						int timestamp = json.getInt("timestamp");
+						int timestamp = (int) System.currentTimeMillis();
 
 						dbManager.insertIlluminationMeasures(co2, light, phase, timestamp);
 					}
