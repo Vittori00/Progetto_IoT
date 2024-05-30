@@ -7,7 +7,6 @@ import org.eclipse.californium.core.CoapResponse;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.example.Resources.IlluminationResource;
 public class CoapObserver implements Runnable{
 	private CoapClient client;
 	private DBManager dbManager = new DBManager("jdbc:mysql://localhost:3306/CottonNet", "admin", "admin");
@@ -48,8 +47,12 @@ public class CoapObserver implements Runnable{
 
 						dbManager.insertSprinklerMeasures(moisture, temperature, timestamp);
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
+			@Override
 			public void onError() {
 				System.out.println("Nothing to observe");
 			}
@@ -57,5 +60,8 @@ public class CoapObserver implements Runnable{
 		relation.proactiveCancel();
 	}
 
-	public void stopObserving(){
+	@Override
+	public void run() {
+		startObserving();
+	}
 }
