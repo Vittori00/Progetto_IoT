@@ -66,9 +66,9 @@ public class RegistrationResource extends CoapResource {
                 String sensorReference = dbManager.select("sensor1");
                 System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
                 response = new Response(CoAP.ResponseCode.CREATED);
-                //String coapPrefix = "coap://[";
-                //String porta = "]:5683";
-                //sensorReference = coapPrefix + sensorReference + porta; 
+                String coapPrefix = "coap://[";
+                String porta = "]:5683";
+                sensorReference = coapPrefix + sensorReference + porta; 
                 response.setPayload(sensorReference); 
                 exchange.respond(response);
                 System.out.println(sensorReference);
