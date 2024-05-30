@@ -18,7 +18,7 @@
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 0
 #define TOGGLE_INTERVAL 10
-char * service_ip;
+char *service_ip;
 char *service_url = "/soil";
 PROCESS(er_example_client, "Erbium Example Client");
 AUTOSTART_PROCESSES(&er_example_client);
@@ -41,10 +41,13 @@ void client_chunk_handler_registration(coap_message_t *response)
     memcpy(payload, chunk, len);
     payload[len] = '\0'; // Ensure null-terminated string
     printf("Response: %i\n", response->code);
-    //l'errore si trova qui.
-    sscanf((const char *)chunk, "%s", service_ip);
-    printf("Ip sensore di riferimento: %s\n", service_ip );
-    
+    // l'errore si trova qui.
+    service_ip = (char *)malloc(len + 1);
+    strcpy(service_ip, payload); // Copia la stringa da payload a service_ip
+    printf("Indirizzo IP del sensore di riferimento: %s\n", service_ip);
+    // sscanf((const char *)chunk, "%s", service_ip);
+    // printf("Ip sensore di riferimento: %s\n", service_ip);
+
     if (response->code == GOOD_ACK)
     {
         printf("Registration successful\n");
@@ -107,11 +110,12 @@ PROCESS_THREAD(er_example_client, ev, data)
 
         if (etimer_expired(&et))
         {
+            
             //il parse sarà ora rivolto all'ip del sensore di riferimento
             coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
             coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
             coap_set_header_uri_path(request, service_url);
-
+            printf("Sending observation request to %s\n", service_ip);
             COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
             printf("\nMoisture: %d, Temperature: %d\n", moisture, temperature);
             features[1] = moisture;
