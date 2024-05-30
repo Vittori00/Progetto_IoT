@@ -55,6 +55,7 @@ public class RegistrationResource extends CoapResource {
                 // attuatore di illuminazione
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor0");
+                System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
                 response = new Response(CoAP.ResponseCode.CREATED);
                 response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
                 exchange.respond(response);
@@ -62,6 +63,7 @@ public class RegistrationResource extends CoapResource {
                 // attuatore di irrigazione
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor1");
+                System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
                 response = new Response(CoAP.ResponseCode.CREATED);
                 response.setPayload(sensorReference); 
                 exchange.respond(response);
