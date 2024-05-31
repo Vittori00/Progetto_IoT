@@ -11,7 +11,7 @@
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
-#define GOOD_ACK 0
+#define GOOD_ACK 65
 
 void client_chunk_handler(coap_message_t *response)
 {
