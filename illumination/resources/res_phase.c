@@ -12,7 +12,7 @@ static void res_event_handler(void);
 
 // Global variables
 static int phase = 0;
-
+int fase = 0;
 // Event resource definition
 EVENT_RESOURCE(res_phase,
                "title=\"Phase\";rt=\"\";obs",
@@ -29,7 +29,7 @@ res_event_handler(void)
 {
     // Generates random value: 0 if first phase, 1 if second phase
     int new_phase = rand() % 2;
-
+    fase = new_phase;
     if (phase != new_phase)
     {
         // Notify all the observers

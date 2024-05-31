@@ -11,7 +11,7 @@ static void res_post_handler(coap_message_t *request, coap_message_t *response, 
 static void res_event_handler(void);
 
 int light = 0;
-
+int light_attuatore = 0;
 // Event resource definition
 EVENT_RESOURCE(res_light,
                "title=\"Light\";rt=\"\";obs",
@@ -28,6 +28,7 @@ res_event_handler(void)
 {
     // Generates random value: 1 if there is light, 0 if not
     int new_light = rand() % 2;
+    light_attuatore = new_light;
     if (light != new_light)
     {
         // Notify all the observers

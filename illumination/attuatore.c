@@ -25,9 +25,9 @@ PROCESS(illumination_client, "Illumination Client");
 AUTOSTART_PROCESSES(&illumination_client);
 
 static void update_led_state();
-int light_attuatore = 0;
-int co2 = 0;
-int fase = 0;
+extern int light_attuatore;
+extern int co2 ;
+extern int fase;
 
 void client_chunk_handler_registration(coap_message_t *response)
 {
@@ -200,7 +200,7 @@ PROCESS_THREAD(illumination_client, ev, data)
     coap_set_header_uri_path(request, "/registration");
     printf("MESSAGGIO INIZIALIZZATO\n");
     cJSON *package = cJSON_CreateObject();
-    cJSON_AddStringToObject(package, "s", "sprinkler");
+    cJSON_AddStringToObject(package, "s", "illumination");
     cJSON_AddStringToObject(package, "t", "actuator");
     cJSON_AddNumberToObject(package, "c", 0);
     char *payload = cJSON_PrintUnformatted(package);

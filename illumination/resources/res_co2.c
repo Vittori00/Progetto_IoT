@@ -16,6 +16,7 @@ void initialize_co2_level(void);
 
 // Global variables
 int co2_level = 0;
+int co2 = 0;
 int too_high = 1500;
 int too_low = 400;
 bool switched = 0;
@@ -34,6 +35,7 @@ EVENT_RESOURCE(res_co2,
 void initialize_co2_level(void)
 {
     co2_level = (rand() % 1800) + 200;
+    co2 = co2_level;
 }
 
 // Event handler function

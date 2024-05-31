@@ -36,7 +36,7 @@ void client_chunk_handler(coap_message_t *response)
   }
 }
 
-extern coap_resource_t res_co2, res_light, res_phase, res_sampling;
+extern coap_resource_t res_co2, res_light, res_phase, res_sampling , res_observation;
 static struct etimer et;
 extern int sampling;
 
@@ -77,6 +77,7 @@ PROCESS_THREAD(illumination_server, ev, data)
   coap_activate_resource(&res_light, "light");
   coap_activate_resource(&res_phase, "phase");
   coap_activate_resource(&res_sampling, "sampling");
+  coap_activate_resource(&res_observation, "observation");
 
   etimer_set(&et, CLOCK_SECOND * sampling);
   while (1)
@@ -90,7 +91,7 @@ PROCESS_THREAD(illumination_server, ev, data)
       res_co2.trigger();
       res_light.trigger();
       res_phase.trigger();
-
+      //res_observation.trigger();
       etimer_set(&et, CLOCK_SECOND * sampling);
     }
   }

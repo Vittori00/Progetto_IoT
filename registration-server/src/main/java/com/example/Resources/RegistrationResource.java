@@ -37,7 +37,7 @@ public class RegistrationResource extends CoapResource {
 
         JSONObject json = new JSONObject(payloadString);
         String sensorName = (String) json.get("s");
-        String sensorType = (String) json.get("t");
+        String sensorType = (String)json.get("t");
         int samplingTime = (int) json.get("c");
         System.out.println("Parsed JSON: " + json);
         // dbManager.register(sensorName, nodeAddress, sensorType , samplingTime);
@@ -54,7 +54,7 @@ public class RegistrationResource extends CoapResource {
                 // attuatore di illuminazione
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor0");
-                System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
+                System.out.println("Se nding Ip Sensore di riferimento: " + sensorReference + "\n");
                 response = new Response(CoAP.ResponseCode.CONTENT);
                 response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
                 exchange.respond(response);
@@ -75,11 +75,15 @@ public class RegistrationResource extends CoapResource {
             
         }
         System.out.println("node at ip: " + nodeAddress + " registered");
-        /// observe(new IlluminationResource(sensorType, nodeAddress)); solo se sensore
-    }
 
-    private static void observe(IlluminationResource resource) {
-        CoapObserver obs = new CoapObserver(resource);
-        obs.startObserving();
+        /*if (sensorType.equals("sensor")) {
+            observe(sensorName, nodeAddress);
+        }*/
+    
     }
+    /*  
+    private static void observe(String sensorName, String address) {
+        CoapObserver obs = new CoapObserver(sensorName, address);
+        obs.startObserving();*/
+    //}
 }
