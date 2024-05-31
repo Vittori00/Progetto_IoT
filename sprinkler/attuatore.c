@@ -16,7 +16,7 @@
 #define LOG_LEVEL LOG_LEVEL_APP
 
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
-#define GOOD_ACK 0
+#define GOOD_ACK 69
 #define TOGGLE_INTERVAL 10
 char *service_ip;
 char *service_url = "/soil";

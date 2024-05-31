@@ -29,7 +29,6 @@ public class RegistrationResource extends CoapResource {
 
     @Override
     public void handlePOST(CoapExchange exchange) {
-        exchange.accept();
         Response response;
         String nodeAddress = exchange.getSourceAddress().getHostAddress();
         String payloadString = exchange.getRequestText();

@@ -12,7 +12,7 @@
 #define LOG_LEVEL LOG_LEVEL_APP
 #define SAMPLING_TIME 10
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
-#define GOOD_ACK 0
+#define GOOD_ACK 65
 
 
 

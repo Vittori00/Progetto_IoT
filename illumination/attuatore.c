@@ -14,7 +14,7 @@
 #define LOG_LEVEL LOG_LEVEL_APP
 #define TOGGLE_INTERVAL 10
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
-#define GOOD_ACK 0
+#define GOOD_ACK 69
 
 char * service_ip;
 char *service_url_co2 = "/co2";
@@ -29,7 +29,7 @@ int light_attuatore = 0;
 int co2 = 0;
 int fase = 0;
 
-void client_chunk_handler(coap_message_t *response)
+void client_chunk_handler_registration(coap_message_t *response)
 {
     const uint8_t *chunk;
     if (response == NULL)
@@ -42,9 +42,12 @@ void client_chunk_handler(coap_message_t *response)
     memcpy(payload, chunk, len);
     payload[len] = '\0'; // Ensure null-terminated string
     printf("Response: %i\n", response->code);
-    //l'errore si trova qui.
-    sscanf((const char *)chunk, "%s", service_ip);
-    printf("Ip sensore di riferimento: %s\n", service_ip);
+    // l'errore si trova qui.
+    service_ip = (char *)malloc(len + 1);
+    strcpy(service_ip, payload); // Copia la stringa da payload a service_ip
+    printf("Indirizzo IP del sensore di riferimento: %s\n", service_ip);
+    // sscanf((const char *)chunk, "%s", service_ip);
+    // printf("Ip sensore di riferimento: %s\n", service_ip);
 
     if (response->code == GOOD_ACK)
     {
@@ -189,15 +192,15 @@ PROCESS_THREAD(illumination_client, ev, data)
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
+    
     coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-    // Registration
+    // Registration Process
     printf("REGISTRATION TO THE SERVER...\n");
     coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
     coap_set_header_uri_path(request, "/registration");
     printf("MESSAGGIO INIZIALIZZATO\n");
     cJSON *package = cJSON_CreateObject();
-
-    cJSON_AddStringToObject(package, "s", "illumination");
+    cJSON_AddStringToObject(package, "s", "sprinkler");
     cJSON_AddStringToObject(package, "t", "actuator");
     cJSON_AddNumberToObject(package, "c", 0);
     char *payload = cJSON_PrintUnformatted(package);
@@ -209,7 +212,7 @@ PROCESS_THREAD(illumination_client, ev, data)
     }
     printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
     coap_set_payload(request, (uint8_t *)payload, strlen(payload));
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
     printf("REGISTRATION TO THE SERVER COMPLETED\n");
 
     // il parse sarà ora rivolto all'ip del sensore di riferimento
