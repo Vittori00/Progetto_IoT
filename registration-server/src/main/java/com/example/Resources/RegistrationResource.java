@@ -1,23 +1,12 @@
 package com.example.Resources;
 
-import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResource;
-import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.coap.Response;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.json.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 import com.example.CoapObserver;
 import com.example.DBManager;
-import com.google.protobuf.TextFormat.ParseException;
-
-import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class RegistrationResource extends CoapResource {
 
@@ -76,14 +65,14 @@ public class RegistrationResource extends CoapResource {
         }
         System.out.println("node at ip: " + nodeAddress + " registered");
 
-        /*if (sensorType.equals("sensor")) {
+        if (sensorType.equals("sensor")) {
             observe(sensorName, nodeAddress);
-        }*/
+        }
     
     }
-    /*  
+      
     private static void observe(String sensorName, String address) {
         CoapObserver obs = new CoapObserver(sensorName, address);
-        obs.startObserving();*/
-    //}
+        obs.startObserving();
+    }
 }

@@ -25,27 +25,28 @@ public class CoapObserver implements Runnable{
 			@Override
 			public void onLoad(CoapResponse response) {
 				String responseText = response.getResponseText();
+				System.out.println("Payload received: " + responseText + " \nlunghezza: " + responseText.length());
 				JSONObject json = null;
 
 				try {
-					JSONParser parser = new JSONParser();
+					json = new JSONObject(responseText);
 					if (sensorName.equals("sensor0")) {
-						json = (JSONObject) parser.parse(responseText);
+
 						
-						int co2 = json.getInt("co2");
-						int light = json.getInt("light");
-						int phase = json.getInt("phase");
+						int co2 = json.getInt("c");
+						int light = json.getInt("l");
+						int phase = json.getInt("p");
 						int timestamp = (int) System.currentTimeMillis();
 
 						dbManager.insertIlluminationMeasures(co2, light, phase, timestamp);
 					}
 					else if (sensorName.equals("sensor1")) {
-						json = (JSONObject) parser.parse(responseText);
+						json = new JSONObject(responseText);
 						int temperature = json.getInt("temperature");
 						int moisture = json.getInt("moisture");
-						int timestamp = json.getInt("timestamp");
+						int timestamp = (int) System.currentTimeMillis();
 
-						dbManager.insertSprinklerMeasures(moisture, temperature, timestamp);
+						dbManager.insertSoilMeasures(moisture, temperature, timestamp);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

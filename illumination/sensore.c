@@ -91,7 +91,7 @@ PROCESS_THREAD(illumination_server, ev, data)
       res_co2.trigger();
       res_light.trigger();
       res_phase.trigger();
-      //res_observation.trigger();
+      res_observation.trigger();
       etimer_set(&et, CLOCK_SECOND * sampling);
     }
   }

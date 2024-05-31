@@ -29,7 +29,7 @@ public class DBManager {
                 "INSERT INTO illumination (co2, light, phase, timestamp) VALUES (?, ?, ?, ?)");
 
             pstInsertSprinklerMeasures = conn.prepareStatement(
-                "INSERT INTO sprinkler (moisture, temperature, timestamp) VALUES (?, ?, ?)");
+                "INSERT INTO soil (moisture, temperature, timestamp) VALUES (?, ?, ?)");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -74,7 +74,7 @@ public class DBManager {
         }
     }
 
-    public void insertSprinklerMeasures(int moisture, int temperature, int timestamp) {
+    public void insertSoilMeasures(int moisture, int temperature, int timestamp) {
         try {
             pstInsertSprinklerMeasures.setInt(1, moisture);
             pstInsertSprinklerMeasures.setInt(2, temperature);

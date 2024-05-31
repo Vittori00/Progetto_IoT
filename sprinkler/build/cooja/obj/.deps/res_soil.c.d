@@ -24,7 +24,8 @@ build/cooja/obj/res_soil.o: resources/res_soil.c \
  ../../../os/net/app-layer/coap/coap-engine.h \
  ../../../os/net/app-layer/coap/coap-observe.h \
  ../../../os/net/app-layer/coap/coap-separate.h \
- ../../../os/net/app-layer/coap/coap-observe-client.h
+ ../../../os/net/app-layer/coap/coap-observe-client.h \
+ resources/../../cJSON/cJSON.h
 ../../../os/net/app-layer/coap/module-macros.h:
 ../../../os/contiki.h:
 ../../../arch/platform/cooja/./contiki-conf.h:
@@ -66,3 +67,4 @@ project-conf.h:
 ../../../os/net/app-layer/coap/coap-observe.h:
 ../../../os/net/app-layer/coap/coap-separate.h:
 ../../../os/net/app-layer/coap/coap-observe-client.h:
+resources/../../cJSON/cJSON.h:
