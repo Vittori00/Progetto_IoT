@@ -4,7 +4,8 @@
         "cjson.h": "c",
         "system_error": "c",
         "stdlib.h": "c",
-        "global_variables.h": "c"
+        "global_variables.h": "c",
+        "stdio.h": "c"
     },
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.debug.settings.onBuildFailureProceed": true

@@ -23,7 +23,6 @@ char *service_url = "/soil";
 PROCESS(er_example_client, "Erbium Example Client");
 AUTOSTART_PROCESSES(&er_example_client);
 
-static struct etimer et;
 float features[] = {1, 0, 0};
 int moisture = 0;
 int temperature = 0;
@@ -65,8 +64,27 @@ void client_chunk_handler(coap_message_t *response)
     }
 
     coap_get_payload(response, &chunk);
+    sscanf((char *)chunk, "{\"m\": %d, \"t\": %d}", &moisture, &temperature);
+    printf("moisture: %d , temperature: %d\n", moisture , temperature);
+    features[1] = moisture;
+    features[2] = temperature;
+    int class_idx = eml_trees_predict(&irrigation_model, features, 3);
 
-    sscanf((char *)chunk, "{\"moisture\": %d, \"temperature\": %d}", &moisture, &temperature);
+    printf("Irrigation needed: %d\n", class_idx);
+}
+
+void handle_notification(struct coap_observee_s *observee, void *notification, coap_notification_flag_t flag)
+{
+    coap_message_t *msg = (coap_message_t *)notification;
+    if (msg)
+    {
+        printf("Received notification\n");
+        client_chunk_handler(msg);
+    }
+    else
+    {
+        printf("No notification received\n");
+    }
 }
 
 PROCESS_THREAD(er_example_client, ev, data)
@@ -97,31 +115,18 @@ PROCESS_THREAD(er_example_client, ev, data)
     coap_set_payload(request, (uint8_t *)payload, strlen(payload));
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
     printf("REGISTRATION TO THE SERVER COMPLETED\n");
+    // registration done
 
-    etimer_set(&et, TOGGLE_INTERVAL * CLOCK_SECOND);
+    // starting observing to the resource
+    coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
+    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+    coap_set_header_uri_path(request, service_url);
+    coap_obs_request_registration(&server_ep, service_url, handle_notification, NULL);
 
     while (1)
     {
         PROCESS_YIELD();
 
-        if (etimer_expired(&et))
-        {
-            
-            //il parse sarà ora rivolto all'ip del sensore di riferimento
-            coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
-            coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
-            coap_set_header_uri_path(request, service_url);
-            printf("Sending observation request to %s\n", service_ip);
-            COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
-            printf("\nMoisture: %d, Temperature: %d\n", moisture, temperature);
-            features[1] = moisture;
-            features[2] = temperature;
-
-            int class_idx = eml_trees_predict(&irrigation_model, features, 3);
-
-            printf("Irrigation needed: %d\n", class_idx);
-            etimer_reset(&et);
-        }
     }
     PROCESS_END();
 }

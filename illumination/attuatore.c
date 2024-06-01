@@ -46,8 +46,6 @@ void client_chunk_handler_registration(coap_message_t *response)
     service_ip = (char *)malloc(len + 1);
     strcpy(service_ip, payload); // Copia la stringa da payload a service_ip
     printf("Indirizzo IP del sensore di riferimento: %s\n", service_ip);
-    // sscanf((const char *)chunk, "%s", service_ip);
-    // printf("Ip sensore di riferimento: %s\n", service_ip);
 
     if (response->code == GOOD_ACK)
     {

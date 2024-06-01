@@ -5,7 +5,7 @@
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
 #include "../cJSON/cJSON.h"
-
+#include "global_variables.h"
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "App"
@@ -86,7 +86,7 @@ PROCESS_THREAD(illumination_server, ev, data)
 
     if (ev == PROCESS_EVENT_TIMER && data == &et)
     {
-      printf("Event triggered\n");
+      printf("Sampling resources\n");
       res_co2.trigger();
       res_light.trigger();
       res_phase.trigger();

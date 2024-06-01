@@ -35,7 +35,6 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     cJSON_AddNumberToObject(row, "l", light_attuatore);
     cJSON_AddNumberToObject(row, "p", fase);
     char *payload = cJSON_PrintUnformatted(row);
-    //coap_set_header_content_format(response, APPLICATION_JSON);
     printf("payload: %s length: %ld\n", payload, strlen(payload));
     coap_set_header_content_format(response, APPLICATION_JSON);
     coap_set_payload(response, (uint8_t *)payload, strlen(payload));

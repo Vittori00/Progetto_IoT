@@ -5,16 +5,14 @@
 #include "coap-engine.h"
 #include "coap-blocking-api.h"
 #include "../cJSON/cJSON.h"
+#include "global_variables.h"
 
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
-#define SAMPLING_TIME 10
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 65
-
-
 
 void client_chunk_handler(coap_message_t *response)
 {
@@ -38,13 +36,16 @@ void client_chunk_handler(coap_message_t *response)
     printf("Registration failed\n");
   }
 }
-extern coap_resource_t  res_soil; 
+extern coap_resource_t res_soil, res_sampling;
+static struct etimer et;
+extern int sampling;
+
 PROCESS(er_example_server, "Erbium Example Server");
 AUTOSTART_PROCESSES(&er_example_server);
 
 PROCESS_THREAD(er_example_server, ev, data)
 {
-   static coap_endpoint_t server_ep;
+  static coap_endpoint_t server_ep;
   static coap_message_t request[1];
 
   PROCESS_BEGIN();
@@ -55,10 +56,9 @@ PROCESS_THREAD(er_example_server, ev, data)
   coap_set_header_uri_path(request, "/registration");
   printf("MESSAGGIO INIZIALIZZATO\n");
   cJSON *package = cJSON_CreateObject();
-
   cJSON_AddStringToObject(package, "s", "sensor1");
   cJSON_AddStringToObject(package, "t", "sensor");
-  cJSON_AddNumberToObject(package, "c", SAMPLING_TIME);
+  cJSON_AddNumberToObject(package, "c", sampling);
   char *payload = cJSON_PrintUnformatted(package);
   if (payload == NULL)
   {
@@ -71,14 +71,21 @@ PROCESS_THREAD(er_example_server, ev, data)
   COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
   printf("REGISTRATION TO THE SERVER COMPLETED\n");
 
-
+  coap_activate_resource(&res_sampling, "sampling");
   coap_activate_resource(&res_soil, "soil");
+  etimer_set(&et, CLOCK_SECOND * sampling);
 
-  while(1) {
-    
+  while (1)
+  {
     PROCESS_WAIT_EVENT();
 
-  }                             
+    if (ev == PROCESS_EVENT_TIMER && data == &et)
+    {
+      printf("sampling soil\n");
+      res_soil.trigger();
+      etimer_set(&et, CLOCK_SECOND * sampling);
+    }
+  }
 
   PROCESS_END();
 }
