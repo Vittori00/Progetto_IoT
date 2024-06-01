@@ -54,7 +54,8 @@ build/cooja/obj/attuatore.o: attuatore.c \
  ../../../os/dev/leds.h ../../../os/dev/gpio-hal.h \
  ../../../arch/platform/cooja/./dev/gpio-hal-arch.h ../cJSON/cJSON.h \
  ../../../os/net/app-layer/coap/coap-log.h ../../../os/sys/log.h \
- ../../../os/sys/log-conf.h
+ ../../../os/sys/log-conf.h global_variables.h \
+ ../../../os/dev/button-hal.h
 ../../../os/net/app-layer/coap/module-macros.h:
 ../../../os/contiki.h:
 ../../../arch/platform/cooja/./contiki-conf.h:
@@ -146,3 +147,5 @@ project-conf.h:
 ../../../os/net/app-layer/coap/coap-log.h:
 ../../../os/sys/log.h:
 ../../../os/sys/log-conf.h:
+global_variables.h:
+../../../os/dev/button-hal.h:

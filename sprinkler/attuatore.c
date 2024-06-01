@@ -10,6 +10,12 @@
 #include "eml_common.h"       // Common header for emlearn
 #include "../cJSON/cJSON.h"
 
+#if PLATFORM_SUPPORTS_BUTTON_HAL
+#include "dev/button-hal.h"
+#else
+#include "dev/button-sensor.h"
+#endif
+
 /* Log configuration */
 #include "coap-log.h"
 #define LOG_MODULE "App"
@@ -26,7 +32,7 @@ AUTOSTART_PROCESSES(&er_example_client);
 float features[] = {1, 0, 0};
 int moisture = 0;
 int temperature = 0;
-static int sensor_reg = 0;
+static int actuator_reg = 0;
 void client_chunk_handler_registration(coap_message_t *response)
 {
     const uint8_t *chunk;
@@ -47,7 +53,7 @@ void client_chunk_handler_registration(coap_message_t *response)
     if (response->code == GOOD_ACK)
     {
         printf("Registration successful\n");
-        sensor_reg = 1;
+        actuator_reg = 1;
     }
     else
     {
@@ -94,40 +100,44 @@ PROCESS_THREAD(er_example_client, ev, data)
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-    while (sensor_reg == 0)
+    while (ev == button_hal_press_event)
     {
-        coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-        // Registration Process
-        printf("REGISTRATION TO THE SERVER...\n");
-        coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-        coap_set_header_uri_path(request, "/registration");
-        printf("MESSAGGIO INIZIALIZZATO\n");
-        cJSON *package = cJSON_CreateObject();
-        cJSON_AddStringToObject(package, "s", "sprinkler");
-        cJSON_AddStringToObject(package, "t", "actuator");
-        cJSON_AddNumberToObject(package, "c", 0);
-        char *payload = cJSON_PrintUnformatted(package);
-        if (payload == NULL)
+
+        while (actuator_reg == 0)
         {
-            LOG_ERR("Failed to print JSON object\n");
-            cJSON_Delete(package);
-            PROCESS_EXIT();
+            coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
+            // Registration Process
+            printf("REGISTRATION TO THE SERVER...\n");
+            coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
+            coap_set_header_uri_path(request, "/registration");
+            printf("MESSAGGIO INIZIALIZZATO\n");
+            cJSON *package = cJSON_CreateObject();
+            cJSON_AddStringToObject(package, "s", "sprinkler");
+            cJSON_AddStringToObject(package, "t", "actuator");
+            cJSON_AddNumberToObject(package, "c", 0);
+            char *payload = cJSON_PrintUnformatted(package);
+            if (payload == NULL)
+            {
+                LOG_ERR("Failed to print JSON object\n");
+                cJSON_Delete(package);
+                PROCESS_EXIT();
+            }
+            printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+            coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+            COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
         }
-        printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
-        coap_set_payload(request, (uint8_t *)payload, strlen(payload));
-        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
-    }
-    printf("REGISTRATION TO THE SERVER COMPLETED\n");
+        printf("REGISTRATION TO THE SERVER COMPLETED\n");
 
-    // starting observing to the resource
-    coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
-    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
-    coap_set_header_uri_path(request, service_url);
-    coap_obs_request_registration(&server_ep, service_url, handle_notification, NULL);
+        // starting observing to the resource
+        coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
+        coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+        coap_set_header_uri_path(request, service_url);
+        coap_obs_request_registration(&server_ep, service_url, handle_notification, NULL);
 
-    while (1)
-    {
-        PROCESS_YIELD();
+        while (1)
+        {
+            PROCESS_YIELD();
+        }
     }
     PROCESS_END();
 }

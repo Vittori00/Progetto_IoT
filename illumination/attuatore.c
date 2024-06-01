@@ -8,7 +8,12 @@
 #include "os/dev/leds.h"
 #include "../cJSON/cJSON.h"
 #include "coap-log.h"
-
+#include "global_variables.h"
+#if PLATFORM_SUPPORTS_BUTTON_HAL
+#include "dev/button-hal.h"
+#else
+#include "dev/button-sensor.h"
+#endif
 /* Log configuration */
 #define LOG_MODULE "App"
 #define LOG_LEVEL LOG_LEVEL_APP
@@ -20,7 +25,7 @@ char *service_ip;
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
 char *service_url_phase = "/phase";
-int sensor_reg = 0;
+static int actuator_reg = 0;
 PROCESS(illumination_client, "Illumination Client");
 AUTOSTART_PROCESSES(&illumination_client);
 
@@ -50,7 +55,7 @@ void client_chunk_handler_registration(coap_message_t *response)
     if (response->code == GOOD_ACK)
     {
         printf("Registration successful\n");
-        sensor_reg = 1;
+        actuator_reg = 1;
     }
     else
     {
@@ -191,61 +196,66 @@ PROCESS_THREAD(illumination_client, ev, data)
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-    while (sensor_reg == 0)
-    {
-        coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-        // Registration Process
-        printf("REGISTRATION TO THE SERVER...\n");
-        coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-        coap_set_header_uri_path(request, "/registration");
-        printf("MESSAGGIO INIZIALIZZATO\n");
-        cJSON *package = cJSON_CreateObject();
-        cJSON_AddStringToObject(package, "s", "illumination");
-        cJSON_AddStringToObject(package, "t", "actuator");
-        cJSON_AddNumberToObject(package, "c", 0);
-        char *payload = cJSON_PrintUnformatted(package);
-        if (payload == NULL)
-        {
-            LOG_ERR("Failed to print JSON object\n");
-            cJSON_Delete(package);
-            PROCESS_EXIT();
-        }
-        printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
-        coap_set_payload(request, (uint8_t *)payload, strlen(payload));
-        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
-    }
-    printf("REGISTRATION TO THE SERVER COMPLETED\n");
-
-    // il parse sarà ora rivolto all'ip del sensore di riferimento
-    coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
-    // get iniziale per avviare lo stato iniziale delle risorse
-    coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
-    // CO2
-    coap_set_header_uri_path(request, service_url_co2);
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_co2);
-    // Light
-    coap_set_header_uri_path(request, service_url_light);
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_light);
-    // Phase
-    coap_set_header_uri_path(request, service_url_phase);
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_phase);
-    // chiamata funzione cambio luci dati i primi parametri trovati
-    update_led_state();
-    // REGISTRATION PER CO2
-    coap_set_header_uri_path(request, service_url_co2);
-    coap_obs_request_registration(&server_ep, service_url_co2, handle_notification_co2, NULL);
-
-    // REGISTRATION PER light
-    coap_set_header_uri_path(request, service_url_light);
-    coap_obs_request_registration(&server_ep, service_url_light, handle_notification_light, NULL);
-
-    // REGISTRATION PER phase
-    coap_set_header_uri_path(request, service_url_phase);
-    coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
-
-    while (1)
+    while (ev != button_hal_press_event)
     {
         PROCESS_YIELD();
+        while (actuator_reg == 0)
+        {
+            coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
+            // Registration Process
+            printf("REGISTRATION TO THE SERVER...\n");
+            coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
+            coap_set_header_uri_path(request, "/registration");
+            printf("MESSAGGIO INIZIALIZZATO\n");
+            cJSON *package = cJSON_CreateObject();
+            cJSON_AddStringToObject(package, "s", "illumination");
+            cJSON_AddStringToObject(package, "t", "actuator");
+            cJSON_AddNumberToObject(package, "c", 0);
+            char *payload = cJSON_PrintUnformatted(package);
+            if (payload == NULL)
+            {
+                LOG_ERR("Failed to print JSON object\n");
+                cJSON_Delete(package);
+                PROCESS_EXIT();
+            }
+            printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+            coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+            COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
+        }
+        printf("REGISTRATION TO THE SERVER COMPLETED\n");
+
+        // il parse sarà ora rivolto all'ip del sensore di riferimento
+        coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
+        // get iniziale per avviare lo stato iniziale delle risorse
+        coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+        // CO2
+        coap_set_header_uri_path(request, service_url_co2);
+        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_co2);
+        // Light
+        coap_set_header_uri_path(request, service_url_light);
+        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_light);
+        // Phase
+        coap_set_header_uri_path(request, service_url_phase);
+        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_phase);
+        // chiamata funzione cambio luci dati i primi parametri trovati
+        update_led_state();
+        // REGISTRATION PER CO2
+        coap_set_header_uri_path(request, service_url_co2);
+        coap_obs_request_registration(&server_ep, service_url_co2, handle_notification_co2, NULL);
+
+        // REGISTRATION PER light
+        coap_set_header_uri_path(request, service_url_light);
+        coap_obs_request_registration(&server_ep, service_url_light, handle_notification_light, NULL);
+
+        // REGISTRATION PER phase
+        coap_set_header_uri_path(request, service_url_phase);
+        coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
+
+        while (1)
+        {
+            PROCESS_YIELD();
+        }
     }
+
     PROCESS_END();
 }

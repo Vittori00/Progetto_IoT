@@ -54,8 +54,10 @@ build/cooja/obj/attuatore.o: attuatore.c \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_trees.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_common.h \
  /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_log.h \
- ../cJSON/cJSON.h ../../../os/net/app-layer/coap/coap-log.h \
- ../../../os/sys/log.h ../../../os/sys/log-conf.h
+ ../cJSON/cJSON.h ../../../os/dev/button-hal.h ../../../os/dev/gpio-hal.h \
+ ../../../arch/platform/cooja/./dev/gpio-hal-arch.h \
+ ../../../os/net/app-layer/coap/coap-log.h ../../../os/sys/log.h \
+ ../../../os/sys/log-conf.h
 ../../../os/net/app-layer/coap/module-macros.h:
 ../../../os/contiki.h:
 ../../../arch/platform/cooja/./contiki-conf.h:
@@ -145,6 +147,9 @@ irrigation_model.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_common.h:
 /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn/eml_log.h:
 ../cJSON/cJSON.h:
+../../../os/dev/button-hal.h:
+../../../os/dev/gpio-hal.h:
+../../../arch/platform/cooja/./dev/gpio-hal-arch.h:
 ../../../os/net/app-layer/coap/coap-log.h:
 ../../../os/sys/log.h:
 ../../../os/sys/log-conf.h:
