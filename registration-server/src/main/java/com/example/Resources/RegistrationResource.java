@@ -23,7 +23,6 @@ public class RegistrationResource extends CoapResource {
         String payloadString = exchange.getRequestText();
         System.out.println("Payload received: " + payloadString + " \nlunghezza: " + payloadString.length());
         System.out.println("IP address: " + nodeAddress + "\n");
-
         JSONObject json = new JSONObject(payloadString);
         String sensorName = (String) json.get("s");
         String sensorType = (String)json.get("t");
@@ -34,7 +33,7 @@ public class RegistrationResource extends CoapResource {
         if (sensorType.equals("sensor")) {
             dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
             response = new Response(CoAP.ResponseCode.CREATED);
-            exchange.respond(response); //qui non si passa nulla
+            exchange.respond(response); 
         } else {
             // stiamo registrando un attuatore
             dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);

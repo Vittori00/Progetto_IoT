@@ -26,7 +26,7 @@ AUTOSTART_PROCESSES(&er_example_client);
 float features[] = {1, 0, 0};
 int moisture = 0;
 int temperature = 0;
-
+static int sensor_reg = 0;
 void client_chunk_handler_registration(coap_message_t *response)
 {
     const uint8_t *chunk;
@@ -47,6 +47,7 @@ void client_chunk_handler_registration(coap_message_t *response)
     if (response->code == GOOD_ACK)
     {
         printf("Registration successful\n");
+        sensor_reg = 1;
     }
     else
     {
@@ -65,7 +66,7 @@ void client_chunk_handler(coap_message_t *response)
 
     coap_get_payload(response, &chunk);
     sscanf((char *)chunk, "{\"m\": %d, \"t\": %d}", &moisture, &temperature);
-    printf("moisture: %d , temperature: %d\n", moisture , temperature);
+    printf("moisture: %d , temperature: %d\n", moisture, temperature);
     features[1] = moisture;
     features[2] = temperature;
     int class_idx = eml_trees_predict(&irrigation_model, features, 3);
@@ -93,29 +94,30 @@ PROCESS_THREAD(er_example_client, ev, data)
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-
-    coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-    // Registration Process
-    printf("REGISTRATION TO THE SERVER...\n");
-    coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-    coap_set_header_uri_path(request, "/registration");
-    printf("MESSAGGIO INIZIALIZZATO\n");
-    cJSON *package = cJSON_CreateObject();
-    cJSON_AddStringToObject(package, "s", "sprinkler");
-    cJSON_AddStringToObject(package, "t", "actuator");
-    cJSON_AddNumberToObject(package, "c", 0);
-    char *payload = cJSON_PrintUnformatted(package);
-    if (payload == NULL)
+    while (sensor_reg == 0)
     {
-        LOG_ERR("Failed to print JSON object\n");
-        cJSON_Delete(package);
-        PROCESS_EXIT();
+        coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
+        // Registration Process
+        printf("REGISTRATION TO THE SERVER...\n");
+        coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
+        coap_set_header_uri_path(request, "/registration");
+        printf("MESSAGGIO INIZIALIZZATO\n");
+        cJSON *package = cJSON_CreateObject();
+        cJSON_AddStringToObject(package, "s", "sprinkler");
+        cJSON_AddStringToObject(package, "t", "actuator");
+        cJSON_AddNumberToObject(package, "c", 0);
+        char *payload = cJSON_PrintUnformatted(package);
+        if (payload == NULL)
+        {
+            LOG_ERR("Failed to print JSON object\n");
+            cJSON_Delete(package);
+            PROCESS_EXIT();
+        }
+        printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+        coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
     }
-    printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
-    coap_set_payload(request, (uint8_t *)payload, strlen(payload));
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
     printf("REGISTRATION TO THE SERVER COMPLETED\n");
-    // registration done
 
     // starting observing to the resource
     coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
@@ -126,7 +128,6 @@ PROCESS_THREAD(er_example_client, ev, data)
     while (1)
     {
         PROCESS_YIELD();
-
     }
     PROCESS_END();
 }

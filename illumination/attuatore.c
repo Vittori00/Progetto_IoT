@@ -16,17 +16,17 @@
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 69
 
-char * service_ip;
+char *service_ip;
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
 char *service_url_phase = "/phase";
-
+int sensor_reg = 0;
 PROCESS(illumination_client, "Illumination Client");
 AUTOSTART_PROCESSES(&illumination_client);
 
 static void update_led_state();
 extern int light_attuatore;
-extern int co2 ;
+extern int co2;
 extern int fase;
 
 void client_chunk_handler_registration(coap_message_t *response)
@@ -50,6 +50,7 @@ void client_chunk_handler_registration(coap_message_t *response)
     if (response->code == GOOD_ACK)
     {
         printf("Registration successful\n");
+        sensor_reg = 1;
     }
     else
     {
@@ -190,29 +191,31 @@ PROCESS_THREAD(illumination_client, ev, data)
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-    
-    coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
-    // Registration Process
-    printf("REGISTRATION TO THE SERVER...\n");
-    coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-    coap_set_header_uri_path(request, "/registration");
-    printf("MESSAGGIO INIZIALIZZATO\n");
-    cJSON *package = cJSON_CreateObject();
-    cJSON_AddStringToObject(package, "s", "illumination");
-    cJSON_AddStringToObject(package, "t", "actuator");
-    cJSON_AddNumberToObject(package, "c", 0);
-    char *payload = cJSON_PrintUnformatted(package);
-    if (payload == NULL)
+    while (sensor_reg == 0)
     {
-        LOG_ERR("Failed to print JSON object\n");
-        cJSON_Delete(package);
-        PROCESS_EXIT();
+        coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
+        // Registration Process
+        printf("REGISTRATION TO THE SERVER...\n");
+        coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
+        coap_set_header_uri_path(request, "/registration");
+        printf("MESSAGGIO INIZIALIZZATO\n");
+        cJSON *package = cJSON_CreateObject();
+        cJSON_AddStringToObject(package, "s", "illumination");
+        cJSON_AddStringToObject(package, "t", "actuator");
+        cJSON_AddNumberToObject(package, "c", 0);
+        char *payload = cJSON_PrintUnformatted(package);
+        if (payload == NULL)
+        {
+            LOG_ERR("Failed to print JSON object\n");
+            cJSON_Delete(package);
+            PROCESS_EXIT();
+        }
+        printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+        coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+        COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
     }
-    printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
-    coap_set_payload(request, (uint8_t *)payload, strlen(payload));
-    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
     printf("REGISTRATION TO THE SERVER COMPLETED\n");
-    
+
     // il parse sarà ora rivolto all'ip del sensore di riferimento
     coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
     // get iniziale per avviare lo stato iniziale delle risorse
@@ -227,7 +230,7 @@ PROCESS_THREAD(illumination_client, ev, data)
     coap_set_header_uri_path(request, service_url_phase);
     COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_phase);
     // chiamata funzione cambio luci dati i primi parametri trovati
-    update_led_state(); 
+    update_led_state();
     // REGISTRATION PER CO2
     coap_set_header_uri_path(request, service_url_co2);
     coap_obs_request_registration(&server_ep, service_url_co2, handle_notification_co2, NULL);

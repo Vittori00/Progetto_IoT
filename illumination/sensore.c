@@ -12,7 +12,7 @@
 #define LOG_LEVEL LOG_LEVEL_APP
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 65
-
+static sensor_reg = 0;
 void client_chunk_handler(coap_message_t *response)
 {
   const uint8_t *chunk;
@@ -29,6 +29,7 @@ void client_chunk_handler(coap_message_t *response)
   if (response->code == GOOD_ACK)
   {
     printf("Registration successful\n");
+    sensor_reg = 1;
   }
   else
   {
@@ -36,7 +37,7 @@ void client_chunk_handler(coap_message_t *response)
   }
 }
 
-extern coap_resource_t res_co2, res_light, res_phase, res_sampling , res_observation;
+extern coap_resource_t res_co2, res_light, res_phase, res_sampling, res_observation;
 static struct etimer et;
 extern int sampling;
 
@@ -52,27 +53,29 @@ PROCESS_THREAD(illumination_server, ev, data)
   PROCESS_BEGIN();
   coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
   // Registration Process
-  printf("REGISTRATION TO THE SERVER...\n");
-  coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
-  coap_set_header_uri_path(request, "/registration");
-  printf("MESSAGGIO INIZIALIZZATO\n");
-  cJSON *package = cJSON_CreateObject();
-
-  cJSON_AddStringToObject(package, "s", "sensor0");
-  cJSON_AddStringToObject(package, "t", "sensor");
-  cJSON_AddNumberToObject(package, "c", sampling);
-  char *payload = cJSON_PrintUnformatted(package);
-  if (payload == NULL)
+  while (sensor_reg == 0)
   {
-    LOG_ERR("Failed to print JSON object\n");
-    cJSON_Delete(package);
-    PROCESS_EXIT();
-  }
-  printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
-  coap_set_payload(request, (uint8_t *)payload, strlen(payload));
-  COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
-  printf("REGISTRATION TO THE SERVER COMPLETED\n");
+    printf("REGISTRATION TO THE SERVER...\n");
+    coap_init_message(request, COAP_TYPE_CON, COAP_POST, 0);
+    coap_set_header_uri_path(request, "/registration");
+    printf("MESSAGGIO INIZIALIZZATO\n");
+    cJSON *package = cJSON_CreateObject();
 
+    cJSON_AddStringToObject(package, "s", "sensor0");
+    cJSON_AddStringToObject(package, "t", "sensor");
+    cJSON_AddNumberToObject(package, "c", sampling);
+    char *payload = cJSON_PrintUnformatted(package);
+    if (payload == NULL)
+    {
+      LOG_ERR("Failed to print JSON object\n");
+      cJSON_Delete(package);
+      PROCESS_EXIT();
+    }
+    printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+    coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+    COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
+  }
+  printf("REGISTRATION TO THE SERVER COMPLETED\n");
   coap_activate_resource(&res_co2, "co2");
   coap_activate_resource(&res_light, "light");
   coap_activate_resource(&res_phase, "phase");
