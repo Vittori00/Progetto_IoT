@@ -87,7 +87,6 @@ PROCESS_THREAD(illumination_server, ev, data)
     if (ev == PROCESS_EVENT_TIMER && data == &et)
     {
       printf("Event triggered\n");
-
       res_co2.trigger();
       res_light.trigger();
       res_phase.trigger();

@@ -59,18 +59,16 @@ public class RegistrationResource extends CoapResource {
                 sensorReference = coapPrefix + sensorReference + porta; 
                 response.setPayload(sensorReference); 
                 exchange.respond(response);
-                
             }
             
         }
         System.out.println("node at ip: " + nodeAddress + " registered");
-
         if (sensorType.equals("sensor")) {
             observe(sensorName, nodeAddress);
+            System.out.println("Observation at  resource started");
         }
-    
-    }
       
+    }
     private static void observe(String sensorName, String address) {
         CoapObserver obs = new CoapObserver(sensorName, address);
         obs.startObserving();
