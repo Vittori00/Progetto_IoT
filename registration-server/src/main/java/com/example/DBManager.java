@@ -26,10 +26,12 @@ public class DBManager {
             pstSelect = conn.prepareStatement(" SELECT address FROM devices WHERE name = ? ;");
 
             pstInsertIlluminationMeasures = conn.prepareStatement(
-                "INSERT INTO illumination (co2, light, phase, timestamp) VALUES (?, ?, ?, ?)");
+                //"INSERT INTO illumination (co2, light, phase, timestamp) VALUES (?, ?, ?, ?)");
+                "INSERT INTO illumination (co2, light, phase) VALUES (?, ?, ?)");
 
             pstInsertSprinklerMeasures = conn.prepareStatement(
-                "INSERT INTO soil (moisture, temperature, timestamp) VALUES (?, ?, ?)");
+                //"INSERT INTO soil (moisture, temperature, timestamp) VALUES (?, ?, ?)");
+                "INSERT INTO soil (moisture, temperature) VALUES (?, ?)");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,12 +63,12 @@ public class DBManager {
         }
     }
 
-    public void insertIlluminationMeasures(int co2, int light, int phase, int timestamp) {
+    public void insertIlluminationMeasures(int co2, int light, int phase/*, int timestamp*/) {
         try {
             pstInsertIlluminationMeasures.setInt(1, co2);
             pstInsertIlluminationMeasures.setInt(2, light);
             pstInsertIlluminationMeasures.setInt(3, phase);
-            pstInsertIlluminationMeasures.setInt(4, timestamp);
+            //pstInsertIlluminationMeasures.setInt(4, timestamp);
             
             pstInsertIlluminationMeasures.executeUpdate();
         } catch (SQLException e) {
@@ -74,11 +76,11 @@ public class DBManager {
         }
     }
 
-    public void insertSoilMeasures(int moisture, int temperature, int timestamp) {
+    public void insertSoilMeasures(int moisture, int temperature /*, int timestamp*/) {
         try {
             pstInsertSprinklerMeasures.setInt(1, moisture);
             pstInsertSprinklerMeasures.setInt(2, temperature);
-            pstInsertSprinklerMeasures.setInt(3, timestamp);
+            //pstInsertSprinklerMeasures.setInt(3, timestamp);
             
             pstInsertSprinklerMeasures.executeUpdate();
         } catch (SQLException e) {

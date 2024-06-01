@@ -22,11 +22,11 @@ public class RemoteControlApp {
 
         while (true) {
             System.out.println("Remote Control Application");
-            System.out.println("1. Show active devices");
+            System.out.println("1. Show registered devices");
             System.out.println("2. Set new sample timing for the illumination sensor");
             System.out.println("3. Set new sample timing for the soil sensor");
-            System.out.println("4. Show new measures from the illumination sensor");
-            System.out.println("5. Show new measures from the soil sensor");
+            System.out.println("4. Show real-time measures from the illumination sensor");
+            System.out.println("5. Show real-time measures from the soil sensor");
             System.out.println("6. Exit");
             System.out.print("\nChoose an option: ");
 
@@ -35,7 +35,7 @@ public class RemoteControlApp {
 
             switch (choice) {
                 case 1:
-                    // Show active devices
+                    // Show registered devices
                     getActiveDevices();
                     break;
                 case 2:
@@ -148,21 +148,21 @@ public class RemoteControlApp {
 
                     while (resultSet.next()) {
                         int id = resultSet.getInt("id");
-                        int timestamp = resultSet.getInt("timestamp");
+                        //int timestamp = resultSet.getInt("timestamp");
                         if (tableName.equals("illumination")) {
                             int co2 = resultSet.getInt("co2");
                             int light = resultSet.getInt("light");
                             int phase = resultSet.getInt("phase");
-                            System.out.println("id: " + id + ", co2: " + co2 + ", light: " + light + ", phase: " + phase + ", timestamp: " + timestamp);
+                            System.out.println("id: " + id + ", co2: " + co2 + ", light: " + light + ", phase: " + phase/* + ", timestamp: " + timestamp*/);
                         } else if (tableName.equals("soil")) {
                             int moisture = resultSet.getInt("moisture");
                             int temperature = resultSet.getInt("temperature");
-                            System.out.println("id: " + id + ", moisture: " + moisture + ", temperature: " + temperature + ", timestamp: " + timestamp);
+                            System.out.println("id: " + id + ", moisture: " + moisture + ", temperature: " + temperature/* + ", timestamp: " + timestamp*/);
                         }
                         lastReadId = id;
                     }
 
-                    Thread.sleep(10000);  // Polling interval
+                    Thread.sleep(2000);  // Polling interval
 
                 } catch (SQLException | InterruptedException e) {
                     e.printStackTrace();

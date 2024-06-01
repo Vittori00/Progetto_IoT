@@ -39,18 +39,19 @@ public class CoapObserver implements Runnable {
 						int light = json.getInt("l");
 						int phase = json.getInt("p");
 						System.out.println(co2 + " " + light + " " + phase);
-						int timestamp = (int) System.currentTimeMillis();
-						dbManager.insertIlluminationMeasures(co2, light, phase, timestamp);
+						//int timestamp = (int) System.currentTimeMillis();
+						//dbManager.insertIlluminationMeasures(co2, light, phase, timestamp);
+						dbManager.insertIlluminationMeasures(co2, light, phase);
 						System.out.println("Dati illlumination Registrati correttamente");
 					} else if (sensorName.equals("sensor1")) {
 						json = new JSONObject(responseText);
 						System.out.println("Dati soil Arrivati");
 						int moisture = json.getInt("m");
 						int temperature = json.getInt("t");
-						int timestamp = (int) System.currentTimeMillis();
+						//int timestamp = (int) System.currentTimeMillis();
 						System.out.println("Dati soil Registrati correttamente");
 						System.out.println( temperature + " " +  moisture);
-						dbManager.insertSoilMeasures(moisture, temperature, timestamp);
+						dbManager.insertSoilMeasures(moisture, temperature/*, timestamp*/);
 						System.out.println("Dati sensore Registrati correttamente");
 					}
 				} catch (Exception e) {
