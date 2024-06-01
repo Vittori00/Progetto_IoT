@@ -82,6 +82,8 @@ public class RemoteControlApp {
                 CoapResponse response = client.post(Integer.toString(newSampling), 0);
                 if (response != null) {
                     System.out.println("Response: " + response.getResponseText());
+                    resultSet = statement.executeQuery("UPDATE devices SET sampling = " + newSampling + " WHERE name = '" + sensorName + "'");
+
                 } else {
                     System.out.println("No response from server.");
                 }
