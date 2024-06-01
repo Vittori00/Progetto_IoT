@@ -7,7 +7,7 @@
 #include "../global_variables.h"
 
 #define MAX_AGE 60
-int sampling = 10; 
+int sampling = 10;
 
 static void res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
@@ -21,11 +21,29 @@ RESOURCE(res_sampling,
 static void
 res_post_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
-    //non va
+    // non va
     const uint8_t *payload = NULL;
-    coap_get_payload(request, &payload);
-    sscanf((const char *)payload, "{\"sampling\": %d}", &sampling);
-    coap_set_header_content_format(response, APPLICATION_JSON);
-    printf("Tempo di campionamento aggiornato a: %d secondi \n", sampling);
-    coap_set_payload(response, payload , strlen((char *)buffer)); //qui ho modificato cose
+    if (response == NULL)
+    {
+        printf("Error while changing sampling time\n");
+        return;
+    }
+    int len = coap_get_payload(request, &payload);
+    char string[len + 1];
+    // Copy the payload into a temporary buffer
+    memcpy(string, payload, len);
+    string[len] = '\0';
+
+    // Convert the payload to float
+    sampling = atoi(string);
+
+    // Log the new threshold
+    printf("Sampling set as: %i\n", sampling);
+
+    // Construct the response payload
+    len = snprintf((char *)buffer, preferred_size, "Sampling time set as: %i seconds", sampling);
+
+    coap_set_header_content_format(response, TEXT_PLAIN);
+    coap_set_header_etag(response, (uint8_t *)&len, 1);
+    coap_set_payload(response, (uint8_t *)buffer, len);
 }

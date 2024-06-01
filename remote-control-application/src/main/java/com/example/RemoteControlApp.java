@@ -68,29 +68,30 @@ public class RemoteControlApp {
     }
 
     private static void setSampling(int newSampling, String sensorName) {
-        try {
-            Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            Statement statement = connection.createStatement();
-
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement statement = connection.createStatement()) {
+    
             String query = "SELECT address FROM devices WHERE name = '" + sensorName + "'";
             ResultSet resultSet = statement.executeQuery(query);
-
+    
             if (resultSet.next()) {
                 String address = resultSet.getString("address");
                 CoapClient client = new CoapClient("coap://[" + address + "]/sampling");
-
+    
                 CoapResponse response = client.post(Integer.toString(newSampling), 0);
                 if (response != null) {
                     System.out.println("Response: " + response.getResponseText());
-                    resultSet = statement.executeQuery("UPDATE devices SET sampling = " + newSampling + " WHERE name = '" + sensorName + "'");
-
+                    
+                    String updateQuery = "UPDATE devices SET sampling = " + newSampling + " WHERE name = '" + sensorName + "'";
+                    statement.executeUpdate(updateQuery);
+    
                 } else {
                     System.out.println("No response from server.");
                 }
             } else {
                 System.out.println("No device found with name: " + sensorName);
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
