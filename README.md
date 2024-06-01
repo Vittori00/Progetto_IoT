@@ -3,12 +3,10 @@ progetto internet of things
 
 
 COSE DA FARE:
---->CREARE LA REGISTRAZIONE DINAMICA dell'attuatore
-        ---> nell'attuatore dovremo ricevere l'ip preso da una query al db 
---->CREARE LA RISORSA PER CAMBIARE IL TEMPO DI CAMPIONAMENTO
-    ---> va fatto per sensore di illumination e da lato java application 
----->CREARE OSSERVAZIONE DA LATO JAVA
-   ---> il timestamp lo prendo da java, potrei usare la risorsa obs già presente
-   --->andrà creato new thread per poter fare l'obs 
-
---->PASSARE LA ROBA AL DATABASE GRAFANA
+--->implementare obs lato java sprinkler
+        -->va resa la risorsa soil observable e far partire il
+                trigger non da attuatore ma da sensore
+--->user application
+        --->spegnimento
+        --->cambio campionamento
+--->bottoni per accensione
