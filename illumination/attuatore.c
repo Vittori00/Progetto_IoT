@@ -156,39 +156,32 @@ void handle_notification_phase(struct coap_observee_s *observee, void *notificat
         printf("No notification received\n");
     }
 }
-
-void update_led_state()
-
-{
+void update_led_state() {
     leds_off(LEDS_ALL); // Turn off all LEDs initially
 
-    if (light_attuatore == 1 && co2 > 400 && co2 < 1500 && fase == 0)
-    {
-        leds_off(LEDS_ALL); // LED OFF
+    if (light_attuatore == 1 && co2 > 400 && co2 < 1500 && fase == 0) {
+        // LED OFF
     }
-    else if (light_attuatore == 1 && (co2 < 400 || co2 > 1500) && fase == 0)
-    {
-        leds_on(LEDS_YELLOW); // Yellow LED ON
+    else if (light_attuatore == 1 && (co2 < 400 || co2 > 1500) && fase == 0) {
+        leds_on(LEDS_YELLOW);
     }
-    else if (light_attuatore == 0 && co2 > 400 && co2 < 1500 && fase == 0)
-    {
-        leds_on(LEDS_RED); // Red LED Blinking
+    else if (light_attuatore == 0 && co2 > 400 && co2 < 1500 && fase == 0) {
+        leds_on(LEDS_RED);
     }
-    else if (light_attuatore == 0 && (co2 < 400 || co2 > 1500) && fase == 0)
-    {
-        leds_on(LEDS_RED); // Red LED ON
+    else if (light_attuatore == 0 && (co2 < 400 || co2 > 1500) && fase == 0) {
+        leds_on(LEDS_RED);
     }
-    else if (light_attuatore == 1 && co2 < 400 && fase == 1)
-    {
-        leds_off(LEDS_ALL); // LED OFF
+    else if (light_attuatore == 1 && co2 > 400 && co2 < 1500 && fase == 1) {
+        // LED OFF
     }
-    else if (light_attuatore == 1 && (co2 < 400 || co2 > 1500) && fase == 1)
-    {
-        leds_on(LEDS_GREEN); // Green LED ON
+    else if (light_attuatore == 1 && (co2 < 400 || co2 > 1500) && fase == 1) {
+        leds_on(LEDS_GREEN);
     }
-    else
-    {
-        leds_on(LEDS_GREEN); // Blue LED ON
+    else if (light_attuatore == 0 && co2 > 400 && co2 < 1500 && fase == 1) {
+        leds_on(LEDS_YELLOW);
+    }
+    else if (light_attuatore == 0 && (co2 < 400 || co2 > 1500) && fase == 1) {
+        leds_on(LEDS_GREEN);
     }
 }
 extern coap_resource_t res_turnoff;
