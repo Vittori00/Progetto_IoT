@@ -1,12 +1,12 @@
 LUCE ESTRERNA  		CO2			    FASE 			LUCE LED
 
-1			            >400 <1500		0			    SPENTO
+1			            >400 <1500		0			    OFF
 
-1			            <400 >1500		0			    GIALLO fisso
+1			            <400 >1500		0			    YELLOW
 
-0			            >400 <1500		0			    ROSSO LAMPEGGIA POCO
+0			            >400 <1500		0			    RED
 
-0			            <400 >1500		0			    ROSSO FISSO
+0			            <400 >1500		0			    RED
 
 
 
@@ -14,11 +14,11 @@ LUCE ESTRERNA  		CO2			    FASE 			LUCE LED
 
 1			             >400 <1500		1			    spento
 
-1		              <400 >1500		1			    VERDE lampeggia
+1		              <400 >1500		1			    GREEN
 
-0 			          >400 <1500		1			    verde fisso 
+0 			          >400 <1500		1			    YELLO
 
-0			            <400 >1500		1			    verde fisso //blu fisso
+0			            <400 >1500		1			    GREEN
 
 
 
