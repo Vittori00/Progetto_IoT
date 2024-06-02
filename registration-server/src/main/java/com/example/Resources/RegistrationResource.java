@@ -42,22 +42,34 @@ public class RegistrationResource extends CoapResource {
                 // attuatore di illuminazione
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor0");
-                System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
-                response = new Response(CoAP.ResponseCode.CONTENT);
-                response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
-                exchange.respond(response);
-                
+                if(sensorReference.isEmpty()){
+                    response = new Response(CoAP.ResponseCode.BAD_REQUEST);
+                    exchange.respond(response);
+                }else{
+                    System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
+                    response = new Response(CoAP.ResponseCode.CONTENT);
+                    String coapPrefix = "coap://[";
+                    String porta = "]:5683";
+                    sensorReference = coapPrefix + sensorReference + porta; 
+                    response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
+                    exchange.respond(response);
+                }
             } else {
                 // attuatore di irrigazione
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor1");
-                System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
-                response = new Response(CoAP.ResponseCode.CONTENT);
-                String coapPrefix = "coap://[";
-                String porta = "]:5683";
-                sensorReference = coapPrefix + sensorReference + porta; 
-                response.setPayload(sensorReference); 
-                exchange.respond(response);
+                if(sensorReference.isEmpty()){
+                    response = new Response(CoAP.ResponseCode.BAD_REQUEST);
+                    exchange.respond(response);
+                }else{
+                    System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
+                    response = new Response(CoAP.ResponseCode.CONTENT);
+                    String coapPrefix = "coap://[";
+                    String porta = "]:5683";
+                    sensorReference = coapPrefix + sensorReference + porta; 
+                    response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
+                    exchange.respond(response);
+                }
             }
             
         }

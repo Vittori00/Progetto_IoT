@@ -225,11 +225,12 @@ PROCESS_THREAD(illumination_client, ev, data)
             COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
         }
         printf("REGISTRATION TO THE SERVER COMPLETED\n");
-
+        
         // il parse sarà ora rivolto all'ip del sensore di riferimento
         coap_endpoint_parse(service_ip, strlen(service_ip), &server_ep);
-        // get iniziale per avviare lo stato iniziale delle risorse
         coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
+        /*
+        // get iniziale per avviare lo stato iniziale delle risorse
         // CO2
         coap_set_header_uri_path(request, service_url_co2);
         COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_co2);
@@ -240,7 +241,7 @@ PROCESS_THREAD(illumination_client, ev, data)
         coap_set_header_uri_path(request, service_url_phase);
         COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_phase);
         // chiamata funzione cambio luci dati i primi parametri trovati
-        update_led_state();
+        update_led_state(); */
         // REGISTRATION PER CO2
         coap_set_header_uri_path(request, service_url_co2);
         coap_obs_request_registration(&server_ep, service_url_co2, handle_notification_co2, NULL);
