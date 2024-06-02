@@ -25,6 +25,7 @@ char *service_ip;
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
 char *service_url_phase = "/phase";
+extern int turnoff;
 static int actuator_reg = 0;
 PROCESS(illumination_client, "Illumination Client");
 AUTOSTART_PROCESSES(&illumination_client);
@@ -157,6 +158,7 @@ void handle_notification_phase(struct coap_observee_s *observee, void *notificat
 }
 
 void update_led_state()
+
 {
     leds_off(LEDS_ALL); // Turn off all LEDs initially
 
@@ -189,14 +191,14 @@ void update_led_state()
         leds_on(LEDS_GREEN); // Blue LED ON
     }
 }
-
+extern coap_resource_t res_turnoff;
 PROCESS_THREAD(illumination_client, ev, data)
 {
     static coap_endpoint_t server_ep;
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-    while (ev != button_hal_press_event)
+    while (ev != button_hal_press_event && turnoff == 0 )
     {
         PROCESS_YIELD();
         while (actuator_reg == 0)
@@ -250,12 +252,13 @@ PROCESS_THREAD(illumination_client, ev, data)
         // REGISTRATION PER phase
         coap_set_header_uri_path(request, service_url_phase);
         coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
+        coap_activate_resource(&res_turnoff, "turn_off");
 
-        while (1)
+        while (turnoff != 1)
         {
             PROCESS_YIELD();
         }
     }
-
+    
     PROCESS_END();
 }

@@ -33,6 +33,7 @@ float features[] = {1, 0, 0};
 int moisture = 0;
 int temperature = 0;
 static int actuator_reg = 0;
+extern int turnoff;
 void client_chunk_handler_registration(coap_message_t *response)
 {
     const uint8_t *chunk;
@@ -50,7 +51,7 @@ void client_chunk_handler_registration(coap_message_t *response)
     service_ip = (char *)malloc(len + 1);
     strcpy(service_ip, payload); // Copia la stringa da payload a service_ip
     printf("Indirizzo IP del sensore di riferimento: %s\n", service_ip);
-    if (response->code == GOOD_ACK)
+    if (len != 0)
     {
         printf("Registration successful\n");
         actuator_reg = 1;
@@ -93,14 +94,14 @@ void handle_notification(struct coap_observee_s *observee, void *notification, c
         printf("No notification received\n");
     }
 }
-
+extern coap_resource_t res_turnoff;
 PROCESS_THREAD(er_example_client, ev, data)
 {
     static coap_endpoint_t server_ep;
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-    while (ev != button_hal_press_event)
+    while (ev != button_hal_press_event && turnoff == 0)
     {
         PROCESS_YIELD();
         while (actuator_reg == 0)
@@ -133,8 +134,8 @@ PROCESS_THREAD(er_example_client, ev, data)
         coap_init_message(request, COAP_TYPE_CON, COAP_GET, 0);
         coap_set_header_uri_path(request, service_url);
         coap_obs_request_registration(&server_ep, service_url, handle_notification, NULL);
-
-        while (1)
+        coap_activate_resource(&res_turnoff, "turn_off");
+        while (turnoff != 1)
         {
             PROCESS_YIELD();
         }

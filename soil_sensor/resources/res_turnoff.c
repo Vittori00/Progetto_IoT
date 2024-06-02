@@ -23,5 +23,5 @@ static void res_turnoff_get(coap_message_t *request, coap_message_t *response,
     //imposto variabile ad 1 per far uscire il nodo dal ciclo
      turnoff=1; 
     coap_set_payload(response, "Bye!", 19);
-    printf("Plant Sensor Offline\n");
+    printf("Soil Sensor Offline\n");
 }

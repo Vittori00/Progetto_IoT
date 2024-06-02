@@ -19,6 +19,7 @@
 #define SERVER_EP "coap://[fd00::1]:5683" // localhost ip6
 #define GOOD_ACK 65
 int sensor_reg = 0;
+extern int turnoff;
 void client_chunk_handler(coap_message_t *response)
 {
   const uint8_t *chunk;
@@ -43,7 +44,7 @@ void client_chunk_handler(coap_message_t *response)
   }
 }
 
-extern coap_resource_t res_co2, res_light, res_phase, res_sampling, res_observation;
+extern coap_resource_t res_co2, res_light, res_phase, res_sampling, res_observation , res_turnoff;
 static struct etimer et;
 extern int sampling;
 
@@ -57,7 +58,7 @@ PROCESS_THREAD(illumination_server, ev, data)
   static coap_message_t request[1];
 
   PROCESS_BEGIN();
-  while (ev != button_hal_press_event)
+  while (ev != button_hal_press_event && turnoff == 0)
   {
     PROCESS_YIELD();
     // Registration Process
@@ -90,9 +91,10 @@ PROCESS_THREAD(illumination_server, ev, data)
     coap_activate_resource(&res_phase, "phase");
     coap_activate_resource(&res_sampling, "sampling");
     coap_activate_resource(&res_observation, "observation");
+    coap_activate_resource(&res_turnoff, "turn_off");
 
     etimer_set(&et, CLOCK_SECOND * sampling);
-    while (1)
+    while (turnoff != 1)
     {
       PROCESS_WAIT_EVENT();
 
