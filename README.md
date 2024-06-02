@@ -1,44 +1,44 @@
-# Progetto IoT
+# IoT Project
 
-## Descrizione
-Questo progetto è un sistema IoT che include vari componenti per la gestione e il monitoraggio dell'irrigazione di piante. Include sensori, attuatori e applicazioni per la gestione remota.
+## Description
+IoT system that includes various components for managing and monitoring plant irrigation. It includes sensors, actuators, and remote management applications.
 
-## Componenti del Progetto
-- **Illumination**: Gestione dell'illuminazione.
-- **Plant Sensor**: Monitoraggio delle condizioni delle piante.
-- **Registration Server**: Server per la registrazione dei dispositivi.
-- **Remote Control Application**: Applicazione per il controllo remoto.
-- **Soil Sensor**: Monitoraggio dell'umidità del suolo.
-- **Sprinkler**: Controllo degli irrigatori.
+## Project Components
+- **Illumination**: Manages lighting.
+- **Plant Sensor**: Monitors plant conditions.
+- **Registration Server**: Server for device registration.
+- **Remote Control Application**: Application for remote control.
+- **Soil Sensor**: Monitors soil moisture.
+- **Sprinkler**: Controls the sprinklers.
 
-## Struttura del Repository
-- `illumination/`: Codice e configurazioni per la gestione dell'illuminazione.
-- `plant_sensor/`: Codice per i sensori delle piante.
-- `registration-server/`: Codice del server per la registrazione dei dispositivi.
-- `remote-control-application/`: Codice dell'applicazione di controllo remoto.
-- `soil_sensor/`: Codice per i sensori del suolo.
-- `sprinkler/`: Codice per il controllo degli irrigatori.
+## Repository Structure
+- `illumination/`: Code and configurations for managing lighting.
+- `plant_sensor/`: Code for plant sensors.
+- `registration-server/`: Code for the device registration server.
+- `remote-control-application/`: Code for the remote control application.
+- `soil_sensor/`: Code for soil sensors.
+- `sprinkler/`: Code for sprinkler control.
 
-## Prerequisiti
-- Compilatore C
-- Ambiente Java
+## Prerequisites
+- C Compiler
+- Java Environment
 - Make
 
-## Installazione
-1. Clonare il repository:
+## Installation
+1. Clone the repository:
     ```bash
     git clone https://github.com/Vittori00/Progetto_IoT.git
     ```
-2. Navigare nella directory del progetto:
+2. Navigate to the project directory:
     ```bash
     cd Progetto_IoT
     ```
-3. Compilare i vari componenti usando Makefile:
-    ```bash
-    make
-    ```
+3. Start the registration server
+4. Start the nodes (and border router) on Cooja
+5. Press the buttons for the sensors and actuators
+    ``` it is recommended to register the sensors first
+    ``` then start the actuators, although it is possible to press all buttons together
+6. Start the remote control application to use its features
+7. Once finished, it is recommended to shut down the sensors using the appropriate command in the remote application
 
-## Utilizzo
-- **Registrazione Dispositivi**:
-  ```bash
-  ./registration-server/start.sh
+
