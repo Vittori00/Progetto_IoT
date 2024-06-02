@@ -37,7 +37,7 @@ IoT system that includes various components for managing and monitoring plant ir
 4. Start the nodes (and border router) on Cooja
 5. Press the buttons for the sensors and actuators
     ``` it is recommended to register the sensors first
-    ``` then start the actuators, although it is possible to press all buttons together
+    then start the actuators, although it is possible to press all buttons together
 6. Start the remote control application to use its features
 7. Once finished, it is recommended to shut down the sensors using the appropriate command in the remote application
 
