@@ -47,10 +47,10 @@ extern coap_resource_t res_soil, res_sampling , res_turnoff;
 static struct etimer et;
 extern int sampling;
 
-PROCESS(er_example_server, "Erbium Example Server");
-AUTOSTART_PROCESSES(&er_example_server);
+PROCESS(soil_sensor_process, "Soil sensor Server");
+AUTOSTART_PROCESSES(&soil_sensor_process);
 
-PROCESS_THREAD(er_example_server, ev, data)
+PROCESS_THREAD(soil_sensor_process, ev, data)
 {
   static coap_endpoint_t server_ep;
   static coap_message_t request[1];
