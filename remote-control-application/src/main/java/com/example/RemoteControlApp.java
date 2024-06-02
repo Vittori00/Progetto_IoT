@@ -120,7 +120,13 @@ public class RemoteControlApp {
     }
 
     private static void startPolling(final String tableName) {
-        Thread pollingThread = new Thread(() -> getMeasures(tableName));
+        Thread pollingThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getMeasures(tableName);
+            }
+        });
+        
         pollingThread.start();
 
         // Wait for user input to stop polling
