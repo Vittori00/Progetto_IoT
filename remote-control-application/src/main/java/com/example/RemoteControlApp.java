@@ -21,7 +21,8 @@ public class RemoteControlApp {
         Scanner scanner = new Scanner(System.in);
 
         while (running) {
-            System.out.println("Remote Control Application");
+            // Display menu options
+            System.out.println("\nRemote Control Application");
             System.out.println("1. Show registered devices");
             System.out.println("2. Set new sample timing for the illumination sensor");
             System.out.println("3. Set new sample timing for the soil sensor");
@@ -72,6 +73,7 @@ public class RemoteControlApp {
         }
     }
 
+    // Set the sampling rate for a given sensor
     private static void setSampling(int newSampling, String sensorName) {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              Statement statement = connection.createStatement()) {
@@ -101,6 +103,7 @@ public class RemoteControlApp {
         }
     }
 
+    // Display active devices from the database
     private static void getActiveDevices() {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              Statement statement = connection.createStatement();
@@ -119,6 +122,7 @@ public class RemoteControlApp {
         }
     }
 
+    // Start polling the measures from the specified table
     private static void startPolling(final String tableName) {
         Thread pollingThread = new Thread(new Runnable() {
             @Override
@@ -145,6 +149,7 @@ public class RemoteControlApp {
         running = true;
     }
 
+    // Fetch and display measures from the database table
     private static void getMeasures(String tableName) {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
 
@@ -183,6 +188,7 @@ public class RemoteControlApp {
         }
     }
 
+    // Turn off all devices and remove them from the database
     private static void turnOffAllDevices() {
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              Statement statement = connection.createStatement()) {
@@ -198,7 +204,7 @@ public class RemoteControlApp {
                     System.out.println("No response from device at address " + address);
                 }
             }
-            //a questo punto cancelliamo i devices dal database dato che non sono più attivi
+            // Delete devices from the database as they are no longer active
             statement.executeUpdate("DELETE FROM devices");
             
         } catch (SQLException e) {
