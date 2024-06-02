@@ -26,8 +26,8 @@
 #define TOGGLE_INTERVAL 10
 char *service_ip;
 char *service_url = "/soil";
-PROCESS(er_example_client, "Erbium Example Client");
-AUTOSTART_PROCESSES(&er_example_client);
+PROCESS(sprinkler_actuator_process, "Sprinkler Client");
+AUTOSTART_PROCESSES(&sprinkler_actuator_process);
 
 float features[] = {1, 0, 0};
 int moisture = 0;
@@ -95,7 +95,7 @@ void handle_notification(struct coap_observee_s *observee, void *notification, c
     }
 }
 extern coap_resource_t res_turnoff;
-PROCESS_THREAD(er_example_client, ev, data)
+PROCESS_THREAD(sprinkler_actuator_process, ev, data)
 {
     static coap_endpoint_t server_ep;
     static coap_message_t request[1];

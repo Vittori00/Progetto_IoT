@@ -20,7 +20,7 @@ static void res_turnoff_get(coap_message_t *request, coap_message_t *response,
                                      uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 
 { 
-    //imposto variabile ad 1 per far uscire il nodo dal ciclo
+    //imposto variabile ad 1 per far uscire il nodo dal ciclo più esterno
      turnoff=1; 
     coap_set_payload(response, "Bye!", 19);
     printf("illumination Actuator Offline\n");
