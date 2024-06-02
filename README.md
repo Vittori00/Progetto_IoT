@@ -34,7 +34,7 @@ IoT system that includes various components for managing and monitoring plant ir
     cd Progetto_IoT
     ```
 3. Start the registration server
-4. Start the nodes (and border router) on Cooja
+4. Start the nodes (and border router) on Contiki environment 
 5. Press the buttons for the sensors and actuators
     ``` it is recommended to register the sensors first
     then start the actuators, although it is possible to press all buttons together
