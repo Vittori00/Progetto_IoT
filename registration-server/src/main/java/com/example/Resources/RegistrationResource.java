@@ -42,7 +42,7 @@ public class RegistrationResource extends CoapResource {
                 // attuatore di illuminazione
                 dbManager.register(sensorName, nodeAddress, sensorType, samplingTime);
                 String sensorReference = dbManager.select("sensor0");
-                System.out.println("Se nding Ip Sensore di riferimento: " + sensorReference + "\n");
+                System.out.println("Sending Ip Sensore di riferimento: " + sensorReference + "\n");
                 response = new Response(CoAP.ResponseCode.CONTENT);
                 response.setPayload(sensorReference); //passiamo l'ip del sensore a cui fa riferimento
                 exchange.respond(response);

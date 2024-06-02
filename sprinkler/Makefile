@@ -1,4 +1,4 @@
-CONTIKI_PROJECT = sensore attuatore
+CONTIKI_PROJECT = attuatore
 all: $(CONTIKI_PROJECT)
 MODULES_REL += /home/iot_ubuntu_intel/.local/lib/python3.10/site-packages/emlearn
 TARGET_LIBFILES += -lm
