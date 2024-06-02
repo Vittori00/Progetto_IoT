@@ -52,7 +52,7 @@ void client_chunk_handler_registration(coap_message_t *response)
     strcpy(service_ip, payload); // Copia la stringa da payload a service_ip
     printf("Indirizzo IP del sensore di riferimento: %s\n", service_ip);
 
-    if (response->code == GOOD_ACK)
+    if (len != 0 )
     {
         printf("Registration successful\n");
         actuator_reg = 1;
