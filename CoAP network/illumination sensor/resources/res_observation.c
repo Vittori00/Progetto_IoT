@@ -34,12 +34,6 @@ EVENT_RESOURCE(res_observation,
 static void
 res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
 {
-    // Check for invalid request or response
-    if (request == NULL || response == NULL || buffer == NULL || offset == NULL)
-    {
-        printf("Invalid request or response\n");
-        return;
-    }
 
     // Print a message to indicate that the observation is being sent
     printf("observation sending\n");
@@ -59,13 +53,6 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
 
     // Convert the JSON object to a string
     char *payload = cJSON_PrintUnformatted(row);
-    if (payload == NULL)
-    {
-        printf("Failed to print JSON object\n");
-        cJSON_Delete(row);
-        return;
-    }
-
     // Print the payload and its length
     printf("payload: %s length: %ld\n", payload, strlen(payload));
 
@@ -75,9 +62,6 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     // Set the payload of the response
     coap_set_payload(response, (uint8_t *)payload, strlen(payload));
 
-    // Free the payload and JSON object
-    free(payload);
-    cJSON_Delete(row);
 }
 
 // Event handler function to notify observers about the observation state
