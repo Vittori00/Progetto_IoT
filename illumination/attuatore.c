@@ -30,9 +30,9 @@ PROCESS(illumination_client, "Illumination Client");
 AUTOSTART_PROCESSES(&illumination_client);
 
 static void update_led_state();
-extern int light_attuatore;
-extern int co2;
-extern int fase;
+ int light_attuatore = 0;
+ int co2 = 0;
+ int fase = 0;
 
 void client_chunk_handler_registration(coap_message_t *response)
 {
