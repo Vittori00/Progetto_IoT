@@ -20,14 +20,15 @@ public class RemoteControlApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
+        while (running) {
             System.out.println("Remote Control Application");
             System.out.println("1. Show registered devices");
             System.out.println("2. Set new sample timing for the illumination sensor");
             System.out.println("3. Set new sample timing for the soil sensor");
             System.out.println("4. Show real-time measures from the illumination sensor");
             System.out.println("5. Show real-time measures from the soil sensor");
-            System.out.println("6. Exit");
+            System.out.println("6. Turn off all devices");
+            System.out.println("7. Exit");
             System.out.print("\nChoose an option: ");
 
             int choice = scanner.nextInt();
@@ -57,10 +58,14 @@ public class RemoteControlApp {
                     startPolling("soil");
                     break;
                 case 6:
+                    // Turn off all devices
+                    turnOffAllDevices();
+                    break;
+                case 7:
                     // Exit the application
                     running = false;
                     System.out.println("Exiting application...");
-                    System.exit(0);
+                    break;
                 default:
                     System.out.println("Invalid choice");
             }
@@ -115,27 +120,22 @@ public class RemoteControlApp {
     }
 
     private static void startPolling(final String tableName) {
-        Thread pollingThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                getMeasures(tableName);
-            }
-        });
+        Thread pollingThread = new Thread(() -> getMeasures(tableName));
         pollingThread.start();
 
-        // Attendi input dall'utente per fermare il polling
+        // Wait for user input to stop polling
         Scanner scanner = new Scanner(System.in);
         System.out.println("Press Enter to stop polling...");
         scanner.nextLine();
 
-        // Imposta il flag di controllo su false per fermare il polling
+        // Set the running flag to false to stop polling
         running = false;
         try {
             pollingThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // Reset del flag di controllo per consentire nuovi cicli di polling
+        // Reset the running flag to allow new polling cycles
         running = true;
     }
 
@@ -172,6 +172,29 @@ public class RemoteControlApp {
                 }
             }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void turnOffAllDevices() {
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement statement = connection.createStatement()) {
+             
+            ResultSet resultSet = statement.executeQuery("SELECT address FROM devices");
+            while (resultSet.next()) {
+                String address = resultSet.getString("address");
+                CoapClient client = new CoapClient("coap://[" + address + "]/turn_off");
+                CoapResponse response = client.get();
+                if (response != null) {
+                    System.out.println("Response from device at address " + address + ": " + response.getResponseText());
+                } else {
+                    System.out.println("No response from device at address " + address);
+                }
+            }
+            //a questo punto cancelliamo i devices dal database dato che non sono più attivi
+            statement.executeUpdate("DELETE FROM devices");
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }

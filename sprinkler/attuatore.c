@@ -100,9 +100,9 @@ PROCESS_THREAD(er_example_client, ev, data)
     static coap_message_t request[1];
 
     PROCESS_BEGIN();
-    while (ev == button_hal_press_event)
+    while (ev != button_hal_press_event)
     {
-
+        PROCESS_YIELD();
         while (actuator_reg == 0)
         {
             coap_endpoint_parse(SERVER_EP, strlen(SERVER_EP), &server_ep);
