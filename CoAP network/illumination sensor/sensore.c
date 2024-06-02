@@ -59,7 +59,8 @@ void client_chunk_handler(coap_message_t *response)
 
 // CoAP resources
 extern coap_resource_t res_co2, res_light, res_phase, res_sampling, res_observation, res_turnoff;
-
+//sampling time
+extern int sampling;
 // Timer
 static struct etimer et;
 
