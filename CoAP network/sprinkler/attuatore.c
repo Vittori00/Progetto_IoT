@@ -47,7 +47,6 @@ void client_chunk_handler_registration(coap_message_t *response)
     memcpy(payload, chunk, len);
     payload[len] = '\0'; // Ensure null-terminated string
     printf("Response: %i\n", response->code);
-    // l'errore si trova qui.
     service_ip = (char *)malloc(len + 1);
     strcpy(service_ip, payload); // Copia la stringa da payload a service_ip
     printf("Indirizzo IP del sensore di riferimento: %s\n", service_ip);
