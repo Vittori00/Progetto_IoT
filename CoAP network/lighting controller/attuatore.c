@@ -24,7 +24,7 @@
 char *service_ip;
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
-char *service_url_phase = "phase";
+char *service_url_phase = "/phase";
 extern int turnoff;
 static int actuator_reg = 0;
 PROCESS(illumination_client, "Illumination Client");
@@ -162,7 +162,7 @@ void update_led_state() {
         // LED OFF
     }
     else if (light_attuatore == 1 && (co2 < 400 || co2 > 1500) && fase == 0) {
-        leds_on(LEDS_YELLOW);
+        leds_single_on(LEDS_YELLOW);
     }
     else if (light_attuatore == 0 && co2 > 400 && co2 < 1500 && fase == 0) {
         leds_on(LEDS_RED);
@@ -177,7 +177,7 @@ void update_led_state() {
         leds_on(LEDS_GREEN);
     }
     else if (light_attuatore == 0 && co2 > 400 && co2 < 1500 && fase == 1) {
-        leds_on(LEDS_YELLOW);
+        leds_single_on(LEDS_YELLOW);
     }
     else if (light_attuatore == 0 && (co2 < 400 || co2 > 1500) && fase == 1) {
         leds_on(LEDS_GREEN);
@@ -214,6 +214,7 @@ PROCESS_THREAD(illumination_client, ev, data)
             }
           
             coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+             printf("sending msg\n");
             COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
         }
         printf("REGISTRATION TO THE SERVER COMPLETED\n");

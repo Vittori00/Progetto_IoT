@@ -30,11 +30,10 @@ res_event_handler(void)
     int new_phase = rand() % 2;
     fase = new_phase;
 
-    if (new_phase != phase)
+    if (phase != new_phase)
     {
         // Notify all the observers about the phase change
         coap_notify_observers(&res_phase);
-
         phase = new_phase;
     }
 }

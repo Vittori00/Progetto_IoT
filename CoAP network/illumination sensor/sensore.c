@@ -103,6 +103,7 @@ PROCESS_THREAD(illumination_server, ev, data)
                 PROCESS_EXIT();
             }
             coap_set_payload(request, (uint8_t *)payload, strlen(payload));
+             printf("sending msg\n");
             COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler);
         }
         printf("REGISTRATION TO THE SERVER COMPLETED\n");

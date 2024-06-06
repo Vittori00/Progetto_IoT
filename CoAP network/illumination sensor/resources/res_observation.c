@@ -54,7 +54,7 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     // Convert the JSON object to a string
     char *payload = cJSON_PrintUnformatted(row);
     // Print the payload and its length
-    printf("payload: %s length: %ld\n", payload, strlen(payload));
+   
 
     // Set the content format of the response to JSON
     coap_set_header_content_format(response, APPLICATION_JSON);
