@@ -122,7 +122,7 @@ PROCESS_THREAD(sprinkler_actuator_process, ev, data)
                 cJSON_Delete(package);
                 PROCESS_EXIT();
             }
-            printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+            
             coap_set_payload(request, (uint8_t *)payload, strlen(payload));
             COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
         }

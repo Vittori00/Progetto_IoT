@@ -10,7 +10,7 @@ static void res_get_handler(coap_message_t *request, coap_message_t *response, u
 static void res_event_handler(void);
 
 // Global variables to store the current phase and fase values
-static int phase = 0;
+int phase = 0;
 int fase = 0;
 
 // Event resource definition for the phase resource
@@ -29,10 +29,12 @@ res_event_handler(void)
     // Generate a random phase value: 0 if first phase, 1 if second phase
     int new_phase = rand() % 2;
     fase = new_phase;
-    if (phase != new_phase)
+
+    if (new_phase != phase)
     {
         // Notify all the observers about the phase change
         coap_notify_observers(&res_phase);
+
         phase = new_phase;
     }
 }
@@ -48,4 +50,3 @@ res_get_handler(coap_message_t *request, coap_message_t *response, uint8_t *buff
     // Set the payload of the response
     coap_set_payload(response, buffer, strlen((char *)buffer));
 }
-

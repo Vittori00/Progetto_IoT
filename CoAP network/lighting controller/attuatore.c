@@ -24,7 +24,7 @@
 char *service_ip;
 char *service_url_co2 = "/co2";
 char *service_url_light = "/light";
-char *service_url_phase = "/phase";
+char *service_url_phase = "phase";
 extern int turnoff;
 static int actuator_reg = 0;
 PROCESS(illumination_client, "Illumination Client");
@@ -94,7 +94,7 @@ void client_chunk_handler_light(coap_message_t *response)
     coap_get_payload(response, &chunk);
 
     // Directly parse the JSON response to extract the light status
-    sscanf((const char *)chunk, "{\"light\": %d}", &light_attuatore);
+    sscanf((const char *)chunk, "{\"light\": %d}" , &light_attuatore);
     printf("light status: %d\n", light_attuatore);
     update_led_state();
 }
@@ -111,8 +111,8 @@ void client_chunk_handler_phase(coap_message_t *response)
 
     coap_get_payload(response, &chunk);
 
-    // Directly parse the JSON response to extract the light_attuatore status
-    sscanf((const char *)chunk, "{\"phase\": %d}", &fase);
+    
+    sscanf((const char *)chunk, "{\"phase\": %d}" , &fase);
     printf("Phase: %d\n", fase);
     update_led_state();
 }
@@ -212,7 +212,7 @@ PROCESS_THREAD(illumination_client, ev, data)
                 cJSON_Delete(package);
                 PROCESS_EXIT();
             }
-            printf("il payload %s  lenght  %ld \n", payload, strlen(payload));
+          
             coap_set_payload(request, (uint8_t *)payload, strlen(payload));
             COAP_BLOCKING_REQUEST(&server_ep, request, client_chunk_handler_registration);
         }
@@ -233,6 +233,7 @@ PROCESS_THREAD(illumination_client, ev, data)
         // REGISTRATION PER phase
         coap_set_header_uri_path(request, service_url_phase);
         coap_obs_request_registration(&server_ep, service_url_phase, handle_notification_phase, NULL);
+        
         coap_activate_resource(&res_turnoff, "turn_off");
 
         while (turnoff != 1)
